@@ -3,7 +3,7 @@ package com.imtmobileapps.cryptocompose.event
 import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 
-sealed class ListEvent():UiEvent(){
+sealed class ListEvent():UIEvent(){
 
     data class OnAppInit(val personId: Int) : ListEvent()
     data class OnCoinClicked(val cryptoValue: CryptoValue) : ListEvent()
