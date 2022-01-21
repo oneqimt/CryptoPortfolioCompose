@@ -54,8 +54,6 @@ object AppModule {
         return builder
     }
 
-    // TODO - add RemoteDataSource to be injected the CryptoRepository
-
     @Singleton
     @Provides
     fun provideRemoteDataSource(cryptoApi: CryptoApi) : RemoteDataSource{
