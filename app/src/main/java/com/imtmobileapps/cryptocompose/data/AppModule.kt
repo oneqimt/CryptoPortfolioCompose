@@ -1,6 +1,7 @@
 package com.imtmobileapps.cryptocompose.data
 
 import android.content.Context
+import androidx.core.graphics.createBitmap
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.imtmobileapps.cryptocompose.data.local.AppDatabase
@@ -54,6 +55,12 @@ object AppModule {
     }
 
     // TODO - add RemoteDataSource to be injected the CryptoRepository
+
+    @Singleton
+    @Provides
+    fun provideRemoteDataSource(cryptoApi: CryptoApi) : RemoteDataSource{
+        return RemoteDataSource(cryptoApi = cryptoApi)
+    }
 
     @Singleton
     @Provides
