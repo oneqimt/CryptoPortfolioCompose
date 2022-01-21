@@ -24,25 +24,13 @@ class CryptoListViewModel @Inject constructor(
     val personCoins: StateFlow<CryptoApiState<List<CryptoValue>>> = _personCoins
 
     init {
-        // calls can be made here if necessary
+        // calls can be made here if necessary//
        getPersonCoins(3)
     }
 
 
     fun getPersonCoins(personId: Int) {
 
-        _personCoins.value = CryptoApiState.loading()
-
-        viewModelScope.launch() {
-            repository.getPersonCoins(personId).catch {
-                _personCoins.value =
-                    CryptoApiState.error(it.message.toString())
-
-            }.collect {
-                _personCoins.value = CryptoApiState.success(it.data)
-
-            }
-        }
     }
 
     companion object {

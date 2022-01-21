@@ -6,12 +6,12 @@ class DataStoreHelper {
 
     }
 
-    fun savePersonId(newpersonId: Int){
-        /*prefs?.edit(commit = true){
+    /*fun savePersonId(newpersonId: Int){
+        *//*prefs?.edit(commit = true){
             putInt(PERSON_ID, newpersonId)
-        }*/
+        }*//*
 
-    }
+    }*/
 
     //fun getCurrentPersonId() = prefs?.getInt(PERSON_ID, 0)
 

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CryptoCompose</string>
+    <string name= "button_test">Button test</string>
 </resources>
