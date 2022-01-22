@@ -227,8 +227,8 @@ fun PersonCoinsDetailScreen(
                                 )
                             }
                         }
-                    }
-                }
+                    }// third card end
+                } // item 3 end
 
             }// main column end
         })
