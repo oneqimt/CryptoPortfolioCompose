@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">CryptoCompose</string>
-    <string name= "button_test">Button test</string>
+    <string name="current_price">Current Price:</string>
+    <string name="quantity_held">Quantity Held:</string>
+    <string name="holding_value">Holding Value:</string>
+    <string name="your_cost">Your Cost:</string>
+    <string name="total_value">Total Value:</string>
+    <string name="total_cost">Total Cost:</string>
+    <string name="total_portfolio_holdings">Total Portfolio Holdings</string>
+
 </resources>

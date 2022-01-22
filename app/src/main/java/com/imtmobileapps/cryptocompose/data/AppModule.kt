@@ -4,10 +4,7 @@ import android.content.Context
 import androidx.core.graphics.createBitmap
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.imtmobileapps.cryptocompose.data.local.AppDatabase
-import com.imtmobileapps.cryptocompose.data.local.CryptoValuesDao
-import com.imtmobileapps.cryptocompose.data.local.PersonDao
-import com.imtmobileapps.cryptocompose.data.local.TotalValuesDao
+import com.imtmobileapps.cryptocompose.data.local.*
 import com.imtmobileapps.cryptocompose.data.remote.CryptoApi
 import com.imtmobileapps.cryptocompose.data.remote.RemoteDataSource
 import com.imtmobileapps.cryptocompose.util.Constants.BASE_URL
@@ -62,8 +59,14 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideCryptoRepository(remoteDataSource: RemoteDataSource, cryptoValuesDao: CryptoValuesDao, personDao: PersonDao, totalValuesDao: TotalValuesDao): CryptoRepository {
-        return CryptoRepositoryImpl(remoteDataSource = remoteDataSource, cryptoValuesDao = cryptoValuesDao, personDao = personDao, totalValuesDao = totalValuesDao)
+    fun provideLocalDataSource(cryptoValuesDao:CryptoValuesDao, personDao: PersonDao, totalValuesDao:TotalValuesDao) : LocalDataSource{
+        return LocalDataSource(cryptoValuesDao, personDao, totalValuesDao)
+    }
+
+    @Singleton
+    @Provides
+    fun provideCryptoRepository(remoteDataSource: RemoteDataSource, localDataSource: LocalDataSource): CryptoRepository {
+        return CryptoRepositoryImpl(remoteDataSource, localDataSource)
     }
 
     @Singleton

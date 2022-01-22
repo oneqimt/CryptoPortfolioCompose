@@ -1,11 +1,16 @@
 package com.imtmobileapps.cryptocompose.data
 
+import com.imtmobileapps.cryptocompose.BuildConfig
 import com.imtmobileapps.cryptocompose.data.local.CryptoValuesDao
+import com.imtmobileapps.cryptocompose.data.local.LocalDataSource
 import com.imtmobileapps.cryptocompose.data.local.PersonDao
 import com.imtmobileapps.cryptocompose.data.local.TotalValuesDao
 import com.imtmobileapps.cryptocompose.data.remote.CryptoApi
 import com.imtmobileapps.cryptocompose.data.remote.RemoteDataSource
 import com.imtmobileapps.cryptocompose.model.CryptoValue
+import com.imtmobileapps.cryptocompose.model.TotalValues
+import com.imtmobileapps.cryptocompose.util.Constants.CMC_LOGO_URL
+import com.imtmobileapps.cryptocompose.util.RequestState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -14,14 +19,32 @@ import javax.inject.Inject
 
 class CryptoRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
-    private val cryptoValuesDao: CryptoValuesDao,
-    private val personDao: PersonDao,
-    private val totalValuesDao: TotalValuesDao
+    private val localDataSource: LocalDataSource
     ) : CryptoRepository {
 
 
-    override fun getPersonCoins(personId: Int): List<CryptoValue> {
-        return emptyList()
+    override fun getPersonCoins(personId: Int): Flow<RequestState<List<CryptoValue>>> {
+        return flow {
+
+            val personCoins = remoteDataSource.getPersonCoins(personId)
+            // TODO, We should not have to do this transformation on the client, I will add to the server
+            personCoins.map {
+                val logo = CMC_LOGO_URL + it.coin.cmcId + ".png"
+                it.coin.smallCoinImageUrl = logo
+                it.coin.largeCoinImageUrl = logo
+            }
+            emit(RequestState.Success(personCoins))
+
+        }
+    }
+
+    override fun getTotalValues(personId: Int): Flow<RequestState<TotalValues>> {
+         return flow{
+
+             val totalValues = remoteDataSource.getTotalValues(personId)
+
+             emit(RequestState.Success(totalValues))
+         }
     }
 }
 

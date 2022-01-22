@@ -13,6 +13,23 @@ val LightGray = Color(0xFFFCFCFC)
 val MediumGray = Color(0xFF9C9C9C)
 val DarkGray = Color(0xFF141414)
 
-val Colors.cryptoItemTextColor: Color
+val Colors.cardBackgroundColor: Color
+    @Composable
+    get() = if (isLight) Color.White else Color.Transparent
+
+val Colors.cardBorderColor: Color
+    @Composable
+    get() = if (isLight) Color.LightGray else Color.DarkGray
+
+
+val Colors.coinNameTextColor: Color
+    @Composable
+    get() = if (isLight) DarkGray else LightGray
+
+val Colors.coinSymbolTextColor: Color
+    @Composable
+    get() = if (isLight) DarkGray else LightGray
+
+val Colors.staticTextColor: Color
     @Composable
     get() = if (isLight) DarkGray else LightGray
