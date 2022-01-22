@@ -1,22 +1,17 @@
 package com.imtmobileapps.cryptocompose.data
 
-import com.imtmobileapps.cryptocompose.BuildConfig
-import com.imtmobileapps.cryptocompose.data.local.CryptoValuesDao
 import com.imtmobileapps.cryptocompose.data.local.LocalDataSource
-import com.imtmobileapps.cryptocompose.data.local.PersonDao
-import com.imtmobileapps.cryptocompose.data.local.TotalValuesDao
-import com.imtmobileapps.cryptocompose.data.remote.CryptoApi
 import com.imtmobileapps.cryptocompose.data.remote.RemoteDataSource
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.TotalValues
 import com.imtmobileapps.cryptocompose.util.Constants.CMC_LOGO_URL
 import com.imtmobileapps.cryptocompose.util.RequestState
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
+@ViewModelScoped
 class CryptoRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource
