@@ -1,11 +1,19 @@
 package com.imtmobileapps.cryptocompose.util
 
-object Constants {
+import androidx.datastore.preferences.core.stringPreferencesKey
 
-    const val DATABASE_TABLE = "crypto_compose_table"
-    const val DATABASE_NAME = "crypto_compose_database"
+object Constants {
 
     const val BASE_URL = "https://www.imtmobileapps.com/cryptocompare/"
     const val CMC_LOGO_URL = "https://s2.coinmarketcap.com/static/img/coins/64x64/"
+
+    // DataStore
+    const val PREFERENCE_NAME = "crypto_preferences"
+    const val SORT_STATE_KEY = "sort_state"
+    const val PERSON_ID_KEY = "person_id"
+    const val UPDATE_TIME_KEY = "update_time"
+    const val CACHE_DURATION_KEY = "cache_duration"
+
+
     
 }

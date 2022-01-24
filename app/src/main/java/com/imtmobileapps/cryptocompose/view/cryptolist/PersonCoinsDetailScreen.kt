@@ -49,10 +49,6 @@ fun PersonCoinsDetailScreen(
     val success = totalValuesFromModel.value as RequestState.Success<*>
     val totalValues = success.data as TotalValues?
 
-    println(" PersonCoinsDetailScreen DENNIS and cryptovalue is : ${selectedCryptoValue.value}")
-
-    println("PersonCoinsDetailScreen DENNIS and totalsvalue is : ${totalValues}")
-
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
             when(event){

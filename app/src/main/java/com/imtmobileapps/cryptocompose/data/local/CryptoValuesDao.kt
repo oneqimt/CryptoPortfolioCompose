@@ -9,7 +9,7 @@ import com.imtmobileapps.cryptocompose.model.CryptoValue
 interface CryptoValuesDao {
 
     @Insert
-    suspend fun insertAll(vararg coins: CryptoValue):List<Long>
+    suspend fun insertAll(vararg coins: CryptoValue) : List<Long>
 
     @Query(value = "SELECT * FROM cryptovalue")
     suspend fun getPersonCoins(): List<CryptoValue>
@@ -19,4 +19,7 @@ interface CryptoValuesDao {
 
     @Query(value = "DELETE FROM cryptovalue")
     suspend fun deleteAllCoins()
+
+    @Query("SELECT * FROM cryptovalue WHERE coin_name LIKE :searchQuery OR coin_symbol LIKE :searchQuery")
+    suspend fun searchDatabase(searchQuery: String): List<CryptoValue>
 }

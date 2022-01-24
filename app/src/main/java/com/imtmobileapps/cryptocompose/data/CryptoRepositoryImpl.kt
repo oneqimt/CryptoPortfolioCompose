@@ -21,6 +21,9 @@ class CryptoRepositoryImpl @Inject constructor(
     override fun getPersonCoins(personId: Int): Flow<RequestState<List<CryptoValue>>> {
         return flow {
 
+            // TODO add checkDurationCache logic,
+            //  if exceeded -> call remoteDataSource else -> call localDataSource
+
             val personCoins = remoteDataSource.getPersonCoins(personId)
             // TODO, We should not have to do this transformation on the client, I will add to the server
             personCoins.map {
@@ -40,6 +43,32 @@ class CryptoRepositoryImpl @Inject constructor(
 
              emit(RequestState.Success(totalValues))
          }
+    }
+
+    override fun searchDatabase(searchQuery: String): Flow<List<CryptoValue>> {
+
+        return flow{
+            val searchResult = localDataSource.searchDatabase(searchQuery = searchQuery)
+
+            emit(RequestState.Success(searchResult).data)
+        }
+    }
+
+    override fun insertAll(list: List<CryptoValue>): Flow<List<Long>> {
+        return flow {
+
+            var insertResult = localDataSource.insertAll(*list.toTypedArray())
+
+            emit(RequestState.Success(insertResult).data)
+        }
+    }
+
+    override suspend fun savePersonId(personId: Int) {
+        localDataSource.savePersonId(personId)
+    }
+
+    override suspend fun getCurrentPersonId(): Flow<Int> {
+        return localDataSource.getPersonId()
     }
 }
 

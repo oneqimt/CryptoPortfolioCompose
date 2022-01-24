@@ -59,8 +59,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideLocalDataSource(cryptoValuesDao:CryptoValuesDao, personDao: PersonDao, totalValuesDao:TotalValuesDao) : LocalDataSource{
-        return LocalDataSource(cryptoValuesDao, personDao, totalValuesDao)
+    fun provideLocalDataSource(dataStoreHelperImpl: DataStoreHelperImpl, cryptoValuesDao:CryptoValuesDao, personDao: PersonDao, totalValuesDao:TotalValuesDao) : LocalDataSource{
+        return LocalDataSource(dataStoreHelperImpl, cryptoValuesDao, personDao, totalValuesDao)
     }
 
     @Singleton
@@ -68,6 +68,10 @@ object AppModule {
     fun provideCryptoRepository(remoteDataSource: RemoteDataSource, localDataSource: LocalDataSource): CryptoRepository {
         return CryptoRepositoryImpl(remoteDataSource, localDataSource)
     }
+
+    @Singleton
+    @Provides
+    fun provideDataStoreHelper(@ApplicationContext context: Context)= DataStoreHelperImpl(context)
 
     @Singleton
     @Provides

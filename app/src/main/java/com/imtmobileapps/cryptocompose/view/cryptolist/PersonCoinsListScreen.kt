@@ -60,6 +60,12 @@ fun PersonCoinsListScreen(
         scaffoldState = scaffoldState,
 
         topBar = {
+
+            /*ListAppBar(
+                sharedViewModel = sharedViewModel,
+                searchAppBarState = searchAppBarState,
+                searchTextState = searchTextState
+            )*/
             TopAppBar(modifier = Modifier.padding(0.dp)) {
 
             }

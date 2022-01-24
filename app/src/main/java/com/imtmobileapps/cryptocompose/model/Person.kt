@@ -35,7 +35,7 @@ data class Person(
     val zip: String?,
 
     @Embedded
-    val state:PersonState?
+    val state:State?
 
 
 ): Parcelable {
