@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imtmobileapps.cryptocompose.data.CryptoRepositoryImpl
-import com.imtmobileapps.cryptocompose.data.local.DataStoreHelperImpl
 import com.imtmobileapps.cryptocompose.event.ListEvent
 import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.model.CryptoValue
@@ -25,8 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CryptoListViewModel @Inject constructor(
     private val repository: CryptoRepositoryImpl,
-
-    ) : ViewModel() {
+) : ViewModel() {
 
     // Backing property to avoid state updates from other classes
     // https://developer.android.com/kotlin/flow/stateflow-and-sharedflow
@@ -65,9 +63,11 @@ class CryptoListViewModel @Inject constructor(
     // NOTE : personId will come from login layer when it is built
     // And these calls probably will be made from LoginComposable
     init {
+
         fetchCoinsFromRemote(1)
         fetchTotalValuesFromRemote(1)
-
+        //fetchCoinsFromDatabase(1)
+        //fetchTotalValuesFromDatabase()
     }
 
     fun savePersonId(personId: Int) {
@@ -114,6 +114,7 @@ class CryptoListViewModel @Inject constructor(
                 sendUiEvent(UIEvent.Navigate(route))
 
             }
+
             else -> Unit
         }
 
@@ -126,19 +127,44 @@ class CryptoListViewModel @Inject constructor(
         try {
             viewModelScope.launch {
 
-                repository.getPersonCoins(personId).collect {
+                repository.getPersonCoins(personId, DataSource.REMOTE).collect {
                     _personCoins.value = RequestState.Success(it).data
                     sendUiEvent(ListEvent.OnAppInit(personId))
                 }
 
                 // TEST ONLY STORE LOCALLY. But, probably not here
-                val listToCache = (personCoins.value as RequestState.Success<List<CryptoValue>>).data
-                storeCoinsInDatabase(listToCache)
+                val personCoinsList =
+                    (personCoins.value as RequestState.Success<List<CryptoValue>>).data
+                val sortedlist = sortCryptoValueList(personCoinsList, CoinSort.NAME)
+                _personCoins.value = RequestState.Success(sortedlist)
+
+                // Call deleteAllCoins on database first (prices vary tremendously)
+                deleteAllCoins()
+                storeCoinsInDatabase(personCoinsList)
             }
         } catch (e: Exception) {
             _personCoins.value = RequestState.Error(e.localizedMessage as String)
         }
 
+    }
+
+    private fun fetchCoinsFromDatabase(personId: Int) {
+        try {
+            viewModelScope.launch {
+                repository.getPersonCoins(personId, DataSource.LOCAL).collect {
+                    _personCoins.value = RequestState.Success(it).data
+
+                    val personcoinslist =
+                        (personCoins.value as RequestState.Success<List<CryptoValue>>).data
+                    val sortedlist = sortCryptoValueList(personcoinslist, CoinSort.NAME)
+                    _personCoins.value = RequestState.Success(sortedlist)
+
+                    println("$TAG COINS from DATABASE are: ${personCoins.value}")
+                }
+            }
+        } catch (e: Exception) {
+            _personCoins.value = RequestState.Error(e.localizedMessage as String)
+        }
     }
 
     private fun fetchTotalValuesFromRemote(personId: Int) {
@@ -149,10 +175,32 @@ class CryptoListViewModel @Inject constructor(
                 repository.getTotalValues(personId).collect {
                     _totalValues.value = RequestState.Success(it).data
                 }
+
+                // Delete existing TotalValues
+                deleteTotalValues()
+
+                val totalsToStore = (totalValues.value as RequestState.Success<*>).data
+
+                println("$TAG TotalValues that will be stored in DB $totalsToStore")
+                storeTotalValuesInDatabase(totalsToStore as TotalValues)
             }
 
         } catch (e: Exception) {
             _totalValues.value = RequestState.Error(e.localizedMessage as String)
+        }
+    }
+
+    private fun fetchTotalValuesFromDatabase(){
+        _totalValues.value = RequestState.Loading
+
+        try{
+            viewModelScope.launch {
+                repository.getTotalValues(1).collect {
+                    _totalValues.value = RequestState.Success(it).data
+                }
+            }
+        }catch(e: Exception){
+            e.printStackTrace()
         }
     }
 
@@ -166,7 +214,37 @@ class CryptoListViewModel @Inject constructor(
             }
 
         } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
+    private fun storeTotalValuesInDatabase(totalValues: TotalValues) {
+        try {
+            viewModelScope.launch {
+                repository.insertTotalValues(totalValues)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun deleteAllCoins() {
+        try {
+            viewModelScope.launch {
+                repository.deleteAllCoins()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun deleteTotalValues() {
+        try {
+            viewModelScope.launch {
+                repository.deleteTotalValues()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -181,7 +259,8 @@ class CryptoListViewModel @Inject constructor(
                         _searchedCoins.value = RequestState.Success(it)
 
                         // TEST ONLY STORE LOCALLY. But, probably not here
-                        val coin = (searchedCoins.value as RequestState.Success<List<CryptoValue>>).data
+                        val coin =
+                            (searchedCoins.value as RequestState.Success<List<CryptoValue>>).data
 
                         println("$TAG in searchDatabase and coins are : $coin")
                     }

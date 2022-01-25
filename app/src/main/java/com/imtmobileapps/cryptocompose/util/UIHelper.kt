@@ -5,6 +5,11 @@ import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.TotalValues
 import java.math.BigDecimal
 
+enum class DataSource{
+    LOCAL,
+    REMOTE
+}
+
 enum class CoinSort{
     NAME,
     SYMBOL,
@@ -37,8 +42,9 @@ enum class Action {
     DELETE_ALL,
     UNDO,
     NO_ACTION
-
 }
+
+
 
 fun String?.toAction(): Action {
     return when {
@@ -59,6 +65,30 @@ fun String?.toAction(): Action {
         }
         else -> {
             Action.NO_ACTION
+        }
+    }
+
+}
+
+fun sortCryptoValueList(
+    list: List<CryptoValue>,
+    coinSort: CoinSort) : List<CryptoValue>
+{
+    when(coinSort){
+        CoinSort.NAME ->{
+            return list.sortedBy {
+                it.coin.coinName
+            }
+        }
+
+        CoinSort.SYMBOL -> {
+            return list.sortedBy {
+                it.coin.coinName
+            }
+        }
+
+        CoinSort.NONE ->{
+            return emptyList()
         }
     }
 

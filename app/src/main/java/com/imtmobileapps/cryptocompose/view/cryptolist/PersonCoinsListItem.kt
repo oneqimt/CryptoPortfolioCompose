@@ -33,13 +33,12 @@ fun PersonCoinsListItem(
 
     Card(
         modifier = modifier,
-
         elevation = 2.dp,
         border = BorderStroke(0.3.dp, MaterialTheme.colors.cardBorderColor),
         backgroundColor = MaterialTheme.colors.cardBackgroundColor,
         shape = RoundedCornerShape(corner = CornerSize(6.dp)),
         onClick = {
-            println("PersonCoinsListItem and cryptoValue is : ${cryptoValue.id}")
+            //println("PersonCoinsListItem and cryptoValue is : ${cryptoValue.id}")
             viewModel.onEvent(ListEvent.OnCoinClicked(cryptoValue))
         }
     ) {

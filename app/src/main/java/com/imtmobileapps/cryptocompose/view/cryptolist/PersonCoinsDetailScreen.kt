@@ -52,6 +52,9 @@ fun PersonCoinsDetailScreen(
     // pull the TotalValues object out of the RequestState wrapper
     val totalValuesFromModel: State<RequestState<TotalValues?>> =
         viewModel.totalValues.collectAsState()
+
+    // TODO CRASH here when requesting coins from database on init,
+    // because we need to get the person's TotalValues from database as well
     val success = totalValuesFromModel.value as RequestState.Success<*>
     val totalValues = success.data as TotalValues?
 

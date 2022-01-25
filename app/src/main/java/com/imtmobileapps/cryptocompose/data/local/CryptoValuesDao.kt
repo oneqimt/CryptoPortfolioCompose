@@ -22,4 +22,5 @@ interface CryptoValuesDao {
 
     @Query("SELECT * FROM cryptovalue WHERE coin_name LIKE :searchQuery OR coin_symbol LIKE :searchQuery")
     suspend fun searchDatabase(searchQuery: String): List<CryptoValue>
+
 }
