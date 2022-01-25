@@ -7,5 +7,13 @@
     <string name="total_value">Total Value:</string>
     <string name="total_cost">Total Cost:</string>
     <string name="total_portfolio_holdings">Total Portfolio Holdings</string>
+    <string name="coins">Coins</string>
+    <string name="search">Search</string>
+    <string name="close_icon">Close Icon</string>
+    <string name="search_coins">Search Coins</string>
+    <string name="sort_action">Sort Coins</string>
+    <string name="delete_all_action">Delete All Coins</string>
+    <string name="back_arrow">Back Arrow</string>
+    <string name="add_coin">Add Coin</string>
 
 </resources>

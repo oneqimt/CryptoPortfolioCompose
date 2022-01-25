@@ -11,10 +11,7 @@ import com.imtmobileapps.cryptocompose.event.ListEvent
 import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.TotalValues
-import com.imtmobileapps.cryptocompose.util.Action
-import com.imtmobileapps.cryptocompose.util.RequestState
-import com.imtmobileapps.cryptocompose.util.Routes
-import com.imtmobileapps.cryptocompose.util.SearchAppBarState
+import com.imtmobileapps.cryptocompose.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -27,7 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CryptoListViewModel @Inject constructor(
-    private val repository: CryptoRepositoryImpl
+    private val repository: CryptoRepositoryImpl,
 
     ) : ViewModel() {
 
@@ -49,16 +46,18 @@ class CryptoListViewModel @Inject constructor(
     private val _uiEvent = Channel<UIEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-        // APP BARS
+    // APP BARS
     var searchAppBarState: MutableState<SearchAppBarState> =
         mutableStateOf(SearchAppBarState.CLOSED)
     val searchTextState: MutableState<String> = mutableStateOf("")
     val action: MutableState<Action> = mutableStateOf(Action.NO_ACTION)
+
     // SEARCH
     private val _searchedCoins =
         MutableStateFlow<RequestState<List<CryptoValue>>>(RequestState.Idle)
     val searchedCoins: StateFlow<RequestState<List<CryptoValue>>> = _searchedCoins
 
+    //SORT
     private val _sortState =
         MutableStateFlow<RequestState<CryptoValue>>(RequestState.Idle)
     val sortState: StateFlow<RequestState<CryptoValue>> = _sortState
@@ -66,25 +65,26 @@ class CryptoListViewModel @Inject constructor(
     // NOTE : personId will come from login layer when it is built
     // And these calls probably will be made from LoginComposable
     init {
-        fetchCoinsFromRemote(3)
-        fetchTotalValuesFromRemote(3)
+        fetchCoinsFromRemote(1)
+        fetchTotalValuesFromRemote(1)
+
     }
 
-    fun savePersonId(personId: Int){
-        try{
+    fun savePersonId(personId: Int) {
+        try {
             viewModelScope.launch {
                 repository.savePersonId(personId)
                 println("$TAG SAVING personId $personId")
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             println("$TAG SAVING person ERROR ${e.localizedMessage}")
         }
 
     }
 
-    fun getPersonId():Int{
+    fun getPersonId(): Int {
 
-        var personId : Int = -1
+        var personId: Int = -1
 
         viewModelScope.launch {
             repository.getCurrentPersonId().collect {
@@ -107,8 +107,7 @@ class CryptoListViewModel @Inject constructor(
             }
 
             is ListEvent.OnCoinClicked -> {
-                val personId = getPersonId()
-                println("$TAG ListEvent.OnCoinClicked and PERSON ID  is: $personId")
+
                 _selectedCryptoValue.value = event.cryptoValue
                 val route = Routes.PERSON_COINS_DETAIL + "?cmcId=${event.cryptoValue.coin.cmcId}"
                 println("$TAG ListEvent.OnCoinClicked NAVIGATE to this route:  $route")
@@ -133,8 +132,8 @@ class CryptoListViewModel @Inject constructor(
                 }
 
                 // TEST ONLY STORE LOCALLY. But, probably not here
-                /*val listToCache = (personCoins.value as RequestState.Success<List<CryptoValue>>).data
-                storeCoinsInDatabase(listToCache)*/
+                val listToCache = (personCoins.value as RequestState.Success<List<CryptoValue>>).data
+                storeCoinsInDatabase(listToCache)
             }
         } catch (e: Exception) {
             _personCoins.value = RequestState.Error(e.localizedMessage as String)
@@ -152,15 +151,13 @@ class CryptoListViewModel @Inject constructor(
                 }
             }
 
-
-
         } catch (e: Exception) {
             _totalValues.value = RequestState.Error(e.localizedMessage as String)
         }
     }
 
     private fun storeCoinsInDatabase(list: List<CryptoValue>) {
-        try{
+        try {
 
             viewModelScope.launch {
                 repository.insertAll(list).collect {
@@ -168,7 +165,7 @@ class CryptoListViewModel @Inject constructor(
                 }
             }
 
-        }catch (e: Exception){
+        } catch (e: Exception) {
 
         }
     }
@@ -179,9 +176,14 @@ class CryptoListViewModel @Inject constructor(
             viewModelScope.launch {
                 repository.searchDatabase(searchQuery = "%$searchQuery%")
                     .collect {
+                        println("$TAG and in collect search it is: $it")
+
                         _searchedCoins.value = RequestState.Success(it)
 
-                        println("$TAG in searchDatabase and coins are : ${searchedCoins.value}" )
+                        // TEST ONLY STORE LOCALLY. But, probably not here
+                        val coin = (searchedCoins.value as RequestState.Success<List<CryptoValue>>).data
+
+                        println("$TAG in searchDatabase and coins are : $coin")
                     }
             }
         } catch (e: Exception) {
@@ -191,26 +193,20 @@ class CryptoListViewModel @Inject constructor(
     }
 
 
-    fun persistSortState(cryptoValue: CryptoValue) {
+    fun persistSortState(coinSort: CoinSort) {
         viewModelScope.launch(Dispatchers.IO) {
-        // TODO create DataStore
-        // dataStore.persistSortState(cryptoValue = cryptoValue)
+
         }
+
     }
+
     private fun readSortState() {
         Log.d("readSortState", "")
         _sortState.value = RequestState.Loading
         try {
-            viewModelScope.launch {
-              // TODO build data store layer
-               /* dataStore.readSortState
-                    .map { CryptoValue.valueOf(it) }
-                    .collect {
-                        _sortState.value = RequestState.Success(it)
-                    }*/
-            }
+
         } catch (e: Exception) {
-            _sortState.value = RequestState.Error(e.localizedMessage as String)
+            //_sortState.value = RequestState.Error(e.localizedMessage as String)
         }
     }
 

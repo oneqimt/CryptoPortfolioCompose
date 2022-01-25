@@ -7,10 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -18,7 +15,9 @@ import com.imtmobileapps.cryptocompose.components.CircularProgressBar
 import com.imtmobileapps.cryptocompose.event.ListEvent
 import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.model.CryptoValue
+import com.imtmobileapps.cryptocompose.ui.theme.fabBackgroundColor
 import com.imtmobileapps.cryptocompose.util.RequestState
+import com.imtmobileapps.cryptocompose.util.SearchAppBarState
 import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
 import kotlinx.coroutines.flow.collect
 
@@ -29,25 +28,31 @@ fun PersonCoinsListScreen(
     viewModel: CryptoListViewModel
 ) {
 
+    val TAG = "PersonCoinsListScreen"
     val personCoins: State<RequestState<List<CryptoValue>>> =
         viewModel.personCoins.collectAsState()
+
+    val searchedCoins by viewModel.searchedCoins.collectAsState()
+
+    val searchAppBarState: SearchAppBarState by viewModel.searchAppBarState
+    val searchTextState: String by viewModel.searchTextState
 
     val scaffoldState = rememberScaffoldState()
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
-            when(event){
+            when (event) {
                 is UIEvent.ShowSnackbar -> {
                     val result = scaffoldState.snackbarHostState.showSnackbar(
                         message = event.message,
                         actionLabel = event.action
                     )
-                    if(result == SnackbarResult.ActionPerformed) {
+                    if (result == SnackbarResult.ActionPerformed) {
                         viewModel.onEvent(ListEvent.OnUndoDeleteClick)
                     }
                 }
                 is UIEvent.Navigate -> {
-                    println("PersonCoinsListScreen and UIEvent.Navigate called and route is ${event.route}")
+                    println("$TAG and UIEvent.Navigate called and route is ${event.route}")
                     onNavigate(event)
                 }
 
@@ -61,19 +66,17 @@ fun PersonCoinsListScreen(
 
         topBar = {
 
-            /*ListAppBar(
-                sharedViewModel = sharedViewModel,
+            PersonCoinsListAppBar(
+                viewModel = viewModel,
                 searchAppBarState = searchAppBarState,
                 searchTextState = searchTextState
-            )*/
-            TopAppBar(modifier = Modifier.padding(0.dp)) {
+            )
 
-            }
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 viewModel.onEvent(ListEvent.OnListRefresh(3))
-            }) {
+            }, backgroundColor = MaterialTheme.colors.fabBackgroundColor) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add"
@@ -82,7 +85,7 @@ fun PersonCoinsListScreen(
         },
         content = {
 
-            when(personCoins.value) {
+            when (personCoins.value) {
                 RequestState.Loading -> {
                     Column(
                         modifier = Modifier.padding(30.dp),
@@ -110,9 +113,6 @@ fun PersonCoinsListScreen(
                             PersonCoinsListItem(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable {
-                                        //viewModel.onEvent(ListEvent.OnCoinClicked(cryptoValue.coin))
-                                    }
                                     .padding(2.dp),
                                 onEvent = viewModel::onEvent,
                                 cryptoValue = cryptoValue,
@@ -123,7 +123,7 @@ fun PersonCoinsListScreen(
                 }
 
                 else -> Unit
-            }
+            }// end when
 
         })
 

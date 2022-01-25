@@ -1,5 +1,6 @@
 package com.imtmobileapps.cryptocompose.view.cryptolist
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -22,9 +23,8 @@ import com.imtmobileapps.cryptocompose.R
 import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.TotalValues
-import com.imtmobileapps.cryptocompose.ui.theme.cardBackgroundColor
-import com.imtmobileapps.cryptocompose.ui.theme.cardBorderColor
-import com.imtmobileapps.cryptocompose.ui.theme.coinNameTextColor
+import com.imtmobileapps.cryptocompose.ui.theme.*
+import com.imtmobileapps.cryptocompose.util.Action
 import com.imtmobileapps.cryptocompose.util.RequestState
 import com.imtmobileapps.cryptocompose.util.RowType
 import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
@@ -32,9 +32,14 @@ import kotlinx.coroutines.flow.collect
 
 @Composable
 fun PersonCoinsDetailScreen(
+    navigateToListScreen: (Action) -> Unit,
     onPopBackStack: () -> Unit,
-    viewModel: CryptoListViewModel
+    viewModel: CryptoListViewModel,
 ) {
+
+    BackHandler {
+        navigateToListScreen(Action.NO_ACTION)
+    }
     // remember calculates the value passed to it only during the first composition. It then
     // returns the same value for every subsequent composition.
     val scrollState = rememberScrollState()
@@ -45,13 +50,14 @@ fun PersonCoinsDetailScreen(
     val selectedCryptoValue: State<CryptoValue?> = viewModel.selectedCryptoValue.collectAsState()
 
     // pull the TotalValues object out of the RequestState wrapper
-    val totalValuesFromModel: State<RequestState<TotalValues?>> = viewModel.totalValues.collectAsState()
+    val totalValuesFromModel: State<RequestState<TotalValues?>> =
+        viewModel.totalValues.collectAsState()
     val success = totalValuesFromModel.value as RequestState.Success<*>
     val totalValues = success.data as TotalValues?
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
-            when(event){
+            when (event) {
                 is UIEvent.PopBackStack -> onPopBackStack()
                 is UIEvent.ShowSnackbar -> {
                     scaffoldState.snackbarHostState.showSnackbar(
@@ -68,9 +74,23 @@ fun PersonCoinsDetailScreen(
         scaffoldState = scaffoldState,
 
         topBar = {
-            TopAppBar(modifier = Modifier.padding(0.dp)) {
-
-            }
+            TopAppBar(
+                navigationIcon = {
+                    BackAction(onBackClicked = navigateToListScreen)
+                },
+                title = {
+                    selectedCryptoValue.value?.coin?.coinName?.let {
+                        Text(
+                            text = it,
+                            color = MaterialTheme.colors.topAppBarContentColor
+                        )
+                    }
+                },
+                backgroundColor = MaterialTheme.colors.topAppBarBackgroundColor
+                /*actions = {
+                    AddAction(onAddClicked = navigateToListScreen)
+                }*/
+            )
         },
 
         content = {
@@ -212,7 +232,8 @@ fun PersonCoinsDetailScreen(
                                 horizontalArrangement = Arrangement.Center
                             ) {
 
-                                val newsTitle = selectedCryptoValue.value?.coin?.coinName.toString() + " " +"NEWS"
+                                val newsTitle =
+                                    selectedCryptoValue.value?.coin?.coinName.toString() + " " + "NEWS"
                                 Text(
                                     modifier = Modifier.padding(2.dp),
                                     text = newsTitle,

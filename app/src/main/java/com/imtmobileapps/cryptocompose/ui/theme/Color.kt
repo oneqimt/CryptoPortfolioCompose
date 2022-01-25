@@ -13,6 +13,18 @@ val LightGray = Color(0xFFFCFCFC)
 val MediumGray = Color(0xFF9C9C9C)
 val DarkGray = Color(0xFF141414)
 
+val Colors.fabBackgroundColor: Color
+    @Composable
+    get() = if (isLight) Purple200 else Purple500
+
+val Colors.topAppBarContentColor: Color
+    @Composable
+    get() = if (isLight) Color.White else LightGray
+
+val Colors.topAppBarBackgroundColor: Color
+    @Composable
+    get() = if (isLight) Purple700 else Color.Black
+
 val Colors.cardBackgroundColor: Color
     @Composable
     get() = if (isLight) Color.White else Color.Transparent

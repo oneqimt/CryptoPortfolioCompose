@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                         PersonCoinsDetailScreen(onPopBackStack = {
                             navController.popBackStack()
 
-                        }, viewModel = viewModel)
+                        }, navigateToListScreen = {navController.popBackStack()}, viewModel = viewModel)
                     }
                 }//end nav host
             }

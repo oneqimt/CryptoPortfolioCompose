@@ -5,6 +5,12 @@ import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.TotalValues
 import java.math.BigDecimal
 
+enum class CoinSort{
+    NAME,
+    SYMBOL,
+    NONE
+}
+
 enum class RowType {
     COIN_NAME,
     COIN_PRICE,
