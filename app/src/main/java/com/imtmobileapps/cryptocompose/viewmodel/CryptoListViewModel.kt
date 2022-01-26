@@ -57,6 +57,12 @@ class CryptoListViewModel @Inject constructor(
         MutableStateFlow<RequestState<CoinSort>>(RequestState.Idle)
     val sortState: StateFlow<RequestState<CoinSort>> = _sortState
 
+    // PERSON ID
+
+    // UPDATE TIME
+
+    // CACHE DURATION
+
     // NOTE : personId will come from login layer when it is built
     // And these calls probably will be made from LoginComposable
     init {
@@ -128,15 +134,16 @@ class CryptoListViewModel @Inject constructor(
                     sendUiEvent(ListEvent.OnAppInit(personId))
                 }
 
-                // TEST ONLY STORE LOCALLY. But, probably not here
-                val personCoinsList =
-                    (personCoins.value as RequestState.Success<List<CryptoValue>>).data
+                val personCoinsList = (personCoins.value as RequestState.Success<List<CryptoValue>>).data
+                // SET A DEFAULT SORT on the LIST
                 val sortedlist = sortCryptoValueList(personCoinsList, CoinSort.NAME)
                 _personCoins.value = RequestState.Success(sortedlist)
 
                 // Call deleteAllCoins on database first (prices vary tremendously)
                 deleteAllCoins()
                 storeCoinsInDatabase(personCoinsList)
+                // initial sort state
+                saveSortState(CoinSort.NAME)
             }
         } catch (e: Exception) {
             _personCoins.value = RequestState.Error(e.localizedMessage as String)
@@ -258,7 +265,7 @@ class CryptoListViewModel @Inject constructor(
                         val coin =
                             (searchedCoins.value as RequestState.Success<List<CryptoValue>>).data
 
-                        println("$TAG in searchDatabase and coins are : $coin")
+                       println("$TAG in searchDatabase and coins are : $coin")
                     }
             }
         } catch (e: Exception) {
@@ -271,11 +278,12 @@ class CryptoListViewModel @Inject constructor(
     fun saveSortState(coinSort: CoinSort) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.saveSortState(coinSort)
+            println("$TAG saving sort state : ${coinSort.name}")
         }
 
     }
 
-    private fun getSortState() {
+    fun getSortState() {
         _sortState.value = RequestState.Loading
         try {
             viewModelScope.launch {
@@ -283,6 +291,10 @@ class CryptoListViewModel @Inject constructor(
                     CoinSort.valueOf(it)
                 }.collect {
                     _sortState.value = RequestState.Success(it)
+                    val sortStateCache = (RequestState.Success(it).data)
+                    val personCoinsList = (personCoins.value as RequestState.Success<List<CryptoValue>>).data
+                    val sortedlist = sortCryptoValueList(personCoinsList, sortStateCache)
+                    _personCoins.value = RequestState.Success(sortedlist)
                 }
             }
 

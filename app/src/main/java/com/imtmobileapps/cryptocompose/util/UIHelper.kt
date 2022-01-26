@@ -83,12 +83,12 @@ fun sortCryptoValueList(
 
         CoinSort.SYMBOL -> {
             return list.sortedBy {
-                it.coin.coinName
+                it.coin.coinSymbol
             }
         }
 
         CoinSort.NONE ->{
-            return emptyList()
+            return list
         }
     }
 

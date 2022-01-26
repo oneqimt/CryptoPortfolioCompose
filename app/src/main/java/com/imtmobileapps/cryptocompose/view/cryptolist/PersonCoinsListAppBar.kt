@@ -34,23 +34,29 @@ import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
 fun PersonCoinsListAppBar(
     viewModel: CryptoListViewModel,
     searchAppBarState: SearchAppBarState,
-    searchTextState: String
-){
+    searchTextState: String,
+) {
 
-    when(searchAppBarState){
-        SearchAppBarState.CLOSED ->{
+    when (searchAppBarState) {
+        SearchAppBarState.CLOSED -> {
             DefaultListAppBar(
                 onSearchClicked = {
                     viewModel.searchAppBarState.value = SearchAppBarState.OPENED
                 },
                 onSortClicked = {
-                    viewModel.persistSortState(it)},
+                    println("PersonCoinsListAppBar and init sort state is: ${it.name}")
+                    viewModel.saveSortState(it)
+                    // a call to this will set the value
+                    viewModel.getSortState()
+
+                    println("PersonCoinsListAppBar and sort state on viewmodel is : ${viewModel.sortState.value}")
+                },
                 onDeleteAllConfirmed = {
                     viewModel.action.value = Action.DELETE_ALL
                 }
             )
         }
-        else ->{
+        else -> {
 
             SearchAppBar(
                 text = searchTextState,
@@ -76,8 +82,8 @@ fun PersonCoinsListAppBar(
 fun DefaultListAppBar(
     onSearchClicked: () -> Unit,
     onSortClicked: (CoinSort) -> Unit,
-    onDeleteAllConfirmed: () -> Unit
-){
+    onDeleteAllConfirmed: () -> Unit,
+) {
     TopAppBar(
         title = {
             Text(
@@ -102,8 +108,8 @@ fun SearchAppBar(
     text: String,
     onTextChange: (String) -> Unit,
     onCloseClicked: () -> Unit,
-    onSearchClicked: (String) -> Unit
-){
+    onSearchClicked: (String) -> Unit,
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -188,15 +194,15 @@ fun SearchAppBar(
 fun ListAppBarActions(
     onSearchClicked: () -> Unit,
     onSortClicked: (CoinSort) -> Unit,
-    onDeleteAllConfirmed: () -> Unit
+    onDeleteAllConfirmed: () -> Unit,
 ) {
-    var openDialog by remember{
+    var openDialog by remember {
         mutableStateOf(false)
     }
 
     /*DisplayAlertDialog(
-        title = stringResource(id = R.string.delete_all_tasks),
-        message = stringResource(id = R.string.delete_all_tasks_confirmation),
+        title = stringResource(id = R.string.delete_all_coins),
+        message = stringResource(id = R.string.delete_all_coins_confirmation),
         openDialog = openDialog,
         closeDialog = { openDialog = false },
         onYesClicked = { onDeleteAllConfirmed() }
@@ -209,7 +215,7 @@ fun ListAppBarActions(
 
 @Composable
 fun SearchAction(
-    onSearchClicked: () -> Unit
+    onSearchClicked: () -> Unit,
 ) {
     IconButton(onClick = { onSearchClicked() }
     ) {
@@ -223,7 +229,7 @@ fun SearchAction(
 
 @Composable
 fun SortAction(
-    onSortClicked: (CoinSort) -> Unit
+    onSortClicked: (CoinSort) -> Unit,
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -275,7 +281,7 @@ fun SortAction(
 
 @Composable
 fun DeleteAllAction(
-    onDeleteAllConfirmed: () -> Unit
+    onDeleteAllConfirmed: () -> Unit,
 ) {
     var expanded by remember {
         mutableStateOf(false)
