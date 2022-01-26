@@ -2,6 +2,7 @@ package com.imtmobileapps.cryptocompose.data.local
 
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.TotalValues
+import com.imtmobileapps.cryptocompose.util.CoinSort
 import com.imtmobileapps.cryptocompose.util.DataSource
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -36,6 +37,30 @@ class LocalDataSource @Inject constructor(
 
     fun getPersonId() : Flow<Int> {
         return dataStore.personId
+    }
+
+    suspend fun saveSortState(sortState: CoinSort){
+        dataStore.saveSortState(sortState)
+    }
+
+    fun getSortState() : Flow<String>{
+        return dataStore.sortState
+    }
+
+    suspend fun saveUpdateTime(updateTime: Long){
+        dataStore.saveUpdateTime(updateTime)
+    }
+
+    fun getUpdateTime() : Flow<Any> {
+        return dataStore.updateTime
+    }
+
+    suspend fun saveCacheDuration(cacheDuration : String){
+        dataStore.saveCacheDuration(cacheDuration)
+    }
+
+    fun getCacheDuration(): Flow<String>{
+        return dataStore.cacheDuration
     }
 
     suspend fun insertTotalValues(totalValues: TotalValues): Long{
