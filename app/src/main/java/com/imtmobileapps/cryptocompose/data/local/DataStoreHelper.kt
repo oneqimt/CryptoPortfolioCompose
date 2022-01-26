@@ -12,6 +12,4 @@ interface DataStoreHelper {
 
     suspend fun saveSortState(coinSort: CoinSort)
 
-
-
 }

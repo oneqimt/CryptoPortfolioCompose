@@ -2,6 +2,7 @@ package com.imtmobileapps.cryptocompose.data
 
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.TotalValues
+import com.imtmobileapps.cryptocompose.util.CoinSort
 import com.imtmobileapps.cryptocompose.util.DataSource
 import com.imtmobileapps.cryptocompose.util.RequestState
 import kotlinx.coroutines.flow.Flow
@@ -25,5 +26,17 @@ interface CryptoRepository {
     suspend fun getCurrentPersonId() : Flow<Int>
 
     suspend fun deleteTotalValues()
+
+    suspend fun saveSortState(sortState: CoinSort)
+
+    fun getSortState(): Flow<String>
+
+    suspend fun saveUpdateTime(updateTime: Long)
+
+    fun getUpdateTime(): Flow<Any>
+
+    suspend fun saveCacheDuration(cacheDuration: String)
+
+    fun getCacheDuration(): Flow<String>
 
 }

@@ -4,6 +4,7 @@ import com.imtmobileapps.cryptocompose.data.local.LocalDataSource
 import com.imtmobileapps.cryptocompose.data.remote.RemoteDataSource
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.TotalValues
+import com.imtmobileapps.cryptocompose.util.CoinSort
 import com.imtmobileapps.cryptocompose.util.Constants.CMC_LOGO_URL
 import com.imtmobileapps.cryptocompose.util.DataSource
 import com.imtmobileapps.cryptocompose.util.RequestState
@@ -93,6 +94,30 @@ class CryptoRepositoryImpl @Inject constructor(
 
     override suspend fun deleteTotalValues() {
         localDataSource.deleteTotalValues()
+    }
+
+    override suspend fun saveSortState(sortState: CoinSort) {
+        localDataSource.saveSortState(sortState)
+    }
+
+    override fun getSortState(): Flow<String> {
+        return localDataSource.getSortState()
+    }
+
+    override suspend fun saveUpdateTime(updateTime: Long) {
+        localDataSource.saveUpdateTime(updateTime)
+    }
+
+    override fun getUpdateTime(): Flow<Any> {
+        return localDataSource.getUpdateTime()
+    }
+
+    override suspend fun saveCacheDuration(cacheDuration: String) {
+        localDataSource.saveCacheDuration(cacheDuration)
+    }
+
+    override fun getCacheDuration(): Flow<String> {
+        return localDataSource.getCacheDuration()
     }
 }
 

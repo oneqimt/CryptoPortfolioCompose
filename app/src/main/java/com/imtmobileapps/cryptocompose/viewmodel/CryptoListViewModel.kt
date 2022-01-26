@@ -14,10 +14,7 @@ import com.imtmobileapps.cryptocompose.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -57,8 +54,8 @@ class CryptoListViewModel @Inject constructor(
 
     //SORT
     private val _sortState =
-        MutableStateFlow<RequestState<CryptoValue>>(RequestState.Idle)
-    val sortState: StateFlow<RequestState<CryptoValue>> = _sortState
+        MutableStateFlow<RequestState<CoinSort>>(RequestState.Idle)
+    val sortState: StateFlow<RequestState<CoinSort>> = _sortState
 
     // NOTE : personId will come from login layer when it is built
     // And these calls probably will be made from LoginComposable
@@ -117,7 +114,6 @@ class CryptoListViewModel @Inject constructor(
 
             else -> Unit
         }
-
     }
 
     private fun fetchCoinsFromRemote(personId: Int) {
@@ -272,30 +268,34 @@ class CryptoListViewModel @Inject constructor(
     }
 
 
-    fun persistSortState(coinSort: CoinSort) {
+    fun saveSortState(coinSort: CoinSort) {
         viewModelScope.launch(Dispatchers.IO) {
-
+            repository.saveSortState(coinSort)
         }
 
     }
 
-    private fun readSortState() {
-        Log.d("readSortState", "")
+    private fun getSortState() {
         _sortState.value = RequestState.Loading
         try {
+            viewModelScope.launch {
+                repository.getSortState().map {
+                    CoinSort.valueOf(it)
+                }.collect {
+                    _sortState.value = RequestState.Success(it)
+                }
+            }
 
         } catch (e: Exception) {
-            //_sortState.value = RequestState.Error(e.localizedMessage as String)
+            _sortState.value = RequestState.Error(e.localizedMessage as String)
         }
     }
-
 
     private fun sendUiEvent(event: UIEvent) {
         viewModelScope.launch {
             _uiEvent.send(event)
         }
     }
-
 
     companion object {
         private val TAG = CryptoListViewModel::class.java.simpleName
