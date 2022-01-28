@@ -25,20 +25,19 @@ import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
 @ExperimentalMaterialApi
 @Composable
 fun PersonCoinsListItem(
-    onEvent: (ListEvent) -> Unit,
     cryptoValue: CryptoValue,
-    modifier: Modifier = Modifier,
     viewModel: CryptoListViewModel
 ) {
 
     Card(
-        modifier = modifier,
+        modifier =  Modifier
+            .fillMaxWidth()
+            .padding(2.dp),
         elevation = 2.dp,
         border = BorderStroke(0.3.dp, MaterialTheme.colors.cardBorderColor),
         backgroundColor = MaterialTheme.colors.cardBackgroundColor,
         shape = RoundedCornerShape(corner = CornerSize(6.dp)),
         onClick = {
-            //println("PersonCoinsListItem and cryptoValue is : ${cryptoValue.id}")
             viewModel.onEvent(ListEvent.OnCoinClicked(cryptoValue))
         }
     ) {

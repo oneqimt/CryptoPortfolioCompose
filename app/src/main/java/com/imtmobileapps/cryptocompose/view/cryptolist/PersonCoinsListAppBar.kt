@@ -34,7 +34,7 @@ import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
 fun PersonCoinsListAppBar(
     viewModel: CryptoListViewModel,
     searchAppBarState: SearchAppBarState,
-    searchTextState: String,
+    searchTextState: String
 ) {
 
     when (searchAppBarState) {
@@ -61,14 +61,15 @@ fun PersonCoinsListAppBar(
             SearchAppBar(
                 text = searchTextState,
                 onTextChange = { newText ->
-                    viewModel.searchTextState.value = newText
+                    //viewModel.searchTextState.value = newText
                 },
                 onCloseClicked = {
                     viewModel.searchAppBarState.value = SearchAppBarState.CLOSED
-                    viewModel.searchTextState.value = ""
+                    //viewModel.searchTextState.value = ""
                 },
                 onSearchClicked = {
                     println("QUERY is : $it")
+                    // NOTE we are removing this from the list app bar for now, but may include in another location
                     viewModel.searchDatabase(searchQuery = it)
                 }
             )
@@ -200,13 +201,6 @@ fun ListAppBarActions(
         mutableStateOf(false)
     }
 
-    /*DisplayAlertDialog(
-        title = stringResource(id = R.string.delete_all_coins),
-        message = stringResource(id = R.string.delete_all_coins_confirmation),
-        openDialog = openDialog,
-        closeDialog = { openDialog = false },
-        onYesClicked = { onDeleteAllConfirmed() }
-    )*/
     SearchAction(onSearchClicked = onSearchClicked)
     SortAction(onSortClicked = onSortClicked)
     DeleteAllAction(onDeleteAllConfirmed = { openDialog = true })

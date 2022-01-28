@@ -8,6 +8,7 @@ sealed class ListEvent():UIEvent(){
     data class OnAppInit(val personId: Int) : ListEvent()
     data class OnCoinClicked(val cryptoValue: CryptoValue) : ListEvent()
     data class OnListRefresh(val personId: Int): ListEvent()
+    object OnAddCoinClicked :ListEvent()
 
     data class OnDeleteCoinClick(val coin: Coin): ListEvent()
     object OnUndoDeleteClick: ListEvent()

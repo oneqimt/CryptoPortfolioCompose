@@ -42,7 +42,7 @@ fun AddAction(
     }) {
         Icon(
             imageVector = Icons.Filled.Check,
-            contentDescription = stringResource(id = R.string.add_coin),
+            contentDescription = stringResource(id = R.string.add_holding),
             tint = MaterialTheme.colors.topAppBarContentColor
         )
     }

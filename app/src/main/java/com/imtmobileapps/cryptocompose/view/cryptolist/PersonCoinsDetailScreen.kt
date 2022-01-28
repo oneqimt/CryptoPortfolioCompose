@@ -10,6 +10,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -32,13 +34,12 @@ import kotlinx.coroutines.flow.collect
 
 @Composable
 fun PersonCoinsDetailScreen(
-    navigateToListScreen: (Action) -> Unit,
     onPopBackStack: () -> Unit,
     viewModel: CryptoListViewModel,
 ) {
 
     BackHandler {
-        navigateToListScreen(Action.NO_ACTION)
+        onPopBackStack()
     }
     // remember calculates the value passed to it only during the first composition. It then
     // returns the same value for every subsequent composition.
@@ -53,8 +54,7 @@ fun PersonCoinsDetailScreen(
     val totalValuesFromModel: State<RequestState<TotalValues?>> =
         viewModel.totalValues.collectAsState()
 
-    // TODO CRASH here when requesting coins from database on init,
-    // because we need to get the person's TotalValues from database as well
+    // we need to get the person's TotalValues from database as well
     val success = totalValuesFromModel.value as RequestState.Success<*>
     val totalValues = success.data as TotalValues?
 
@@ -79,7 +79,9 @@ fun PersonCoinsDetailScreen(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    BackAction(onBackClicked = navigateToListScreen)
+                    IconButton(onClick = {onPopBackStack()}) {
+                        Icon(Icons.Filled.ArrowBack, "backIcon")
+                    }
                 },
                 title = {
                     selectedCryptoValue.value?.coin?.coinName?.let {
@@ -90,9 +92,6 @@ fun PersonCoinsDetailScreen(
                     }
                 },
                 backgroundColor = MaterialTheme.colors.topAppBarBackgroundColor
-                /*actions = {
-                    AddAction(onAddClicked = navigateToListScreen)
-                }*/
             )
         },
 

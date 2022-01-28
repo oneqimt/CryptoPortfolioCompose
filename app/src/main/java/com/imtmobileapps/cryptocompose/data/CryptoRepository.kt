@@ -1,5 +1,6 @@
 package com.imtmobileapps.cryptocompose.data
 
+import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.TotalValues
 import com.imtmobileapps.cryptocompose.util.CoinSort
@@ -10,6 +11,8 @@ import kotlinx.coroutines.flow.Flow
 interface CryptoRepository {
 
     fun getPersonCoins(personId : Int, dataSource: DataSource): Flow<RequestState<List<CryptoValue>>>
+
+    fun getAllCoins(): Flow<RequestState<List<Coin>>>
 
     fun getTotalValues(personId: Int): Flow<RequestState<TotalValues>>
 

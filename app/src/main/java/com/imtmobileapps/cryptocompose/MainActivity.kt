@@ -18,7 +18,9 @@ import com.imtmobileapps.cryptocompose.ui.theme.CryptoComposeTheme
 import com.imtmobileapps.cryptocompose.util.Routes
 import com.imtmobileapps.cryptocompose.view.cryptolist.PersonCoinsDetailScreen
 import com.imtmobileapps.cryptocompose.view.cryptolist.PersonCoinsListScreen
+import com.imtmobileapps.cryptocompose.view.holding.AddHoldingListScreen
 import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
+import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -28,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel: CryptoListViewModel by viewModels()
+    private val holdingsViewModel: ManageHoldingsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,8 +64,18 @@ class MainActivity : ComponentActivity() {
                         PersonCoinsDetailScreen(onPopBackStack = {
                             navController.popBackStack()
 
-                        }, navigateToListScreen = {navController.popBackStack()}, viewModel = viewModel)
+                        }, viewModel = viewModel)
                     }
+
+                    composable(
+                        Routes.ADD_HOLDING_LIST
+                    ){
+                        AddHoldingListScreen(onNavigate = {
+                            navController.navigate(it.route)
+                            println("MAIN Activity AddHoldingListScreen and onNavigate called and route is : $it.route")
+                        },viewModel = holdingsViewModel  )
+                    }
+
                 }//end nav host
             }
         }

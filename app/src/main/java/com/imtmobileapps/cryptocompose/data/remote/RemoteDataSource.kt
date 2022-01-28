@@ -1,5 +1,6 @@
 package com.imtmobileapps.cryptocompose.data.remote
 
+import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.TotalValues
 import javax.inject.Inject
@@ -14,6 +15,10 @@ class RemoteDataSource @Inject constructor(
 
     suspend fun getTotalValues(personId: Int) : TotalValues{
        return cryptoApi.getTotals(personId)
+    }
+
+    suspend fun getAllCoins(): List<Coin>{
+        return cryptoApi.getAllCoins()
     }
 
 

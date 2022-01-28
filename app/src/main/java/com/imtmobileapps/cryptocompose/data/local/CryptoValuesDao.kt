@@ -20,7 +20,7 @@ interface CryptoValuesDao {
     @Query(value = "DELETE FROM cryptovalue")
     suspend fun deleteAllCoins()
 
-    @Query("SELECT * FROM cryptovalue WHERE coin_name LIKE :searchQuery OR coin_symbol LIKE :searchQuery")
+    @Query("SELECT * FROM cryptovalue WHERE cryptovalue.coin_name LIKE :searchQuery OR cryptovalue.coin_symbol LIKE :searchQuery")
     suspend fun searchDatabase(searchQuery: String): List<CryptoValue>
 
 }

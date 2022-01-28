@@ -1,6 +1,5 @@
 package com.imtmobileapps.cryptocompose.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -44,10 +43,10 @@ class CryptoListViewModel @Inject constructor(
     // APP BARS
     var searchAppBarState: MutableState<SearchAppBarState> =
         mutableStateOf(SearchAppBarState.CLOSED)
-    val searchTextState: MutableState<String> = mutableStateOf("")
+
     val action: MutableState<Action> = mutableStateOf(Action.NO_ACTION)
 
-    // SEARCH
+    // SEARCH - NOTE: we may use this in another ViewModel
     private val _searchedCoins =
         MutableStateFlow<RequestState<List<CryptoValue>>>(RequestState.Idle)
     val searchedCoins: StateFlow<RequestState<List<CryptoValue>>> = _searchedCoins
@@ -100,13 +99,10 @@ class CryptoListViewModel @Inject constructor(
 
     fun onEvent(event: UIEvent) {
         when (event) {
-            UIEvent.PopBackStack -> {
-                println("$TAG UIEvent.PopBackStack")
-            }
 
             is ListEvent.OnListRefresh -> {
                 println("$TAG ListEvent.OnListRefresh")
-                fetchCoinsFromRemote(1)
+               // fetchCoinsFromRemote(1)
             }
 
             is ListEvent.OnCoinClicked -> {
@@ -116,6 +112,12 @@ class CryptoListViewModel @Inject constructor(
                 println("$TAG ListEvent.OnCoinClicked NAVIGATE to this route:  $route")
                 sendUiEvent(UIEvent.Navigate(route))
 
+            }
+
+            is ListEvent.OnAddCoinClicked ->{
+                val route = Routes.ADD_HOLDING_LIST
+                println("$TAG ListEvent.OnAddCoinClicked NAVIGATE to this route:  $route")
+                sendUiEvent(UIEvent.Navigate(route))
             }
 
             else -> Unit
@@ -134,7 +136,8 @@ class CryptoListViewModel @Inject constructor(
                     sendUiEvent(ListEvent.OnAppInit(personId))
                 }
 
-                val personCoinsList = (personCoins.value as RequestState.Success<List<CryptoValue>>).data
+                val personCoinsList =
+                    (personCoins.value as RequestState.Success<List<CryptoValue>>).data
                 // SET A DEFAULT SORT on the LIST
                 val sortedlist = sortCryptoValueList(personCoinsList, CoinSort.NAME)
                 _personCoins.value = RequestState.Success(sortedlist)
@@ -193,16 +196,16 @@ class CryptoListViewModel @Inject constructor(
         }
     }
 
-    private fun fetchTotalValuesFromDatabase(){
+    private fun fetchTotalValuesFromDatabase() {
         _totalValues.value = RequestState.Loading
 
-        try{
+        try {
             viewModelScope.launch {
                 repository.getTotalValues(1).collect {
                     _totalValues.value = RequestState.Success(it).data
                 }
             }
-        }catch(e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
@@ -257,15 +260,12 @@ class CryptoListViewModel @Inject constructor(
             viewModelScope.launch {
                 repository.searchDatabase(searchQuery = "%$searchQuery%")
                     .collect {
-                        println("$TAG and in collect search it is: $it")
 
                         _searchedCoins.value = RequestState.Success(it)
 
-                        // TEST ONLY STORE LOCALLY. But, probably not here
                         val coin =
                             (searchedCoins.value as RequestState.Success<List<CryptoValue>>).data
-
-                       println("$TAG in searchDatabase and coins are : $coin")
+                        println("$TAG in searchDatabase and coins are : $coin")
                     }
             }
         } catch (e: Exception) {
@@ -292,7 +292,8 @@ class CryptoListViewModel @Inject constructor(
                 }.collect {
                     _sortState.value = RequestState.Success(it)
                     val sortStateCache = (RequestState.Success(it).data)
-                    val personCoinsList = (personCoins.value as RequestState.Success<List<CryptoValue>>).data
+                    val personCoinsList =
+                        (personCoins.value as RequestState.Success<List<CryptoValue>>).data
                     val sortedlist = sortCryptoValueList(personCoinsList, sortStateCache)
                     _personCoins.value = RequestState.Success(sortedlist)
                 }

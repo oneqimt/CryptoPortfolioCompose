@@ -1,6 +1,5 @@
 package com.imtmobileapps.cryptocompose.view.cryptolist
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -32,10 +31,8 @@ fun PersonCoinsListScreen(
     val personCoins: State<RequestState<List<CryptoValue>>> =
         viewModel.personCoins.collectAsState()
 
-    val searchedCoins by viewModel.searchedCoins.collectAsState()
-
     val searchAppBarState: SearchAppBarState by viewModel.searchAppBarState
-    val searchTextState: String by viewModel.searchTextState
+    //val searchTextState: String by viewModel.searchTextState
 
     val scaffoldState = rememberScaffoldState()
 
@@ -69,13 +66,16 @@ fun PersonCoinsListScreen(
             PersonCoinsListAppBar(
                 viewModel = viewModel,
                 searchAppBarState = searchAppBarState,
-                searchTextState = searchTextState
+                searchTextState = "searchTextState"
             )
 
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                viewModel.onEvent(ListEvent.OnListRefresh(3))
+
+                //viewModel.onEvent(ListEvent.OnListRefresh(3))
+                viewModel.onEvent(ListEvent.OnAddCoinClicked)
+
             }, backgroundColor = MaterialTheme.colors.fabBackgroundColor) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -111,10 +111,7 @@ fun PersonCoinsListScreen(
                         }) { cryptoValue ->
 
                             PersonCoinsListItem(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(2.dp),
-                                onEvent = viewModel::onEvent,
+                                //onEvent = viewModel::onEvent,
                                 cryptoValue = cryptoValue,
                                 viewModel = viewModel)
 

@@ -2,6 +2,7 @@ package com.imtmobileapps.cryptocompose.data
 
 import com.imtmobileapps.cryptocompose.data.local.LocalDataSource
 import com.imtmobileapps.cryptocompose.data.remote.RemoteDataSource
+import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.TotalValues
 import com.imtmobileapps.cryptocompose.util.CoinSort
@@ -118,6 +119,20 @@ class CryptoRepositoryImpl @Inject constructor(
 
     override fun getCacheDuration(): Flow<String> {
         return localDataSource.getCacheDuration()
+    }
+
+    override fun getAllCoins(): Flow<RequestState<List<Coin>>> {
+        return flow {
+            val allCoins = remoteDataSource.getAllCoins()
+
+            allCoins.map {
+                val logo = CMC_LOGO_URL + it.cmcId + ".png"
+                it.smallCoinImageUrl = logo
+                it.largeCoinImageUrl = logo
+            }
+
+            emit(RequestState.Success(allCoins))
+        }
     }
 }
 
