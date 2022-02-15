@@ -14,13 +14,11 @@ import androidx.compose.ui.unit.dp
 import com.imtmobileapps.cryptocompose.ui.theme.coinNameTextColor
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarContentColor
-import com.imtmobileapps.cryptocompose.util.Action
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 
 @Composable
 fun AddHoldingDetailScreen(
-    viewModel: ManageHoldingsViewModel,
-    navigateToHoldingListScreen: (Action) -> Unit
+    viewModel: ManageHoldingsViewModel
 ){
 
     Scaffold(

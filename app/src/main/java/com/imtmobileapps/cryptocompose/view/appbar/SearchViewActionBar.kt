@@ -26,6 +26,7 @@ import com.imtmobileapps.cryptocompose.ui.theme.topAppBarContentColor
 import com.imtmobileapps.cryptocompose.util.Routes
 import com.imtmobileapps.cryptocompose.util.SearchAppBarState
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
+import logcat.LogPriority
 import logcat.logcat
 
 @Composable
@@ -34,7 +35,6 @@ fun SearchViewActionBar(
 ){
     val searchState by viewModel.searchState
     val searchTextState by viewModel.searchTextState
-    val context = LocalContext.current
     val TAG = "SearchViewActionBar"
 
             AppBar(
@@ -48,10 +48,11 @@ fun SearchViewActionBar(
                 onCloseClicked = {
                     viewModel.updateSearchState(SearchAppBarState.CLOSED)
                     logcat(TAG) { "onCloseClicked" }
+                    viewModel.fetchAllCoinsFromRemote()
+
                 },
                 onSearchClicked = {
                     logcat(TAG) { "onSearchClicked" }
-                    viewModel.filterListForSearch()
                 },
                 onSearchTriggered = {
                     viewModel.updateSearchState(SearchAppBarState.OPENED)
@@ -60,11 +61,8 @@ fun SearchViewActionBar(
                 onNavigate = {
                     logcat(TAG) { "AppBar onNavigate called" }
                     viewModel.onEvent(UIEvent.Navigate(it.route))
-
                 }
             )
-
-
 }
 
 @Composable
@@ -112,8 +110,7 @@ fun DefaultAppBar(
 fun SearchAppBar(
     text: String,
     onTextChange: (String) -> Unit,
-    onCloseClicked: () -> Unit,
-    onSearchClicked: (String) -> Unit
+    onCloseClicked: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -164,17 +161,17 @@ fun SearchAppBar(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Close Image",
+                        contentDescription = "CloseImage",
                         tint = Color.White
                     )
                 }
             },
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
+                imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
-                onSearch = {
-                    onSearchClicked(text)
+                onDone = {
+                    onCloseClicked()
                 }
             ),
             colors = TextFieldDefaults.textFieldColors(
@@ -206,8 +203,8 @@ fun AppBar(
             SearchAppBar(
                 text = searchTextState,
                 onTextChange = onTextChange,
-                onCloseClicked = onCloseClicked,
-                onSearchClicked = onSearchClicked
+                onCloseClicked = onCloseClicked
+                //onSearchClicked = onSearchClicked
             )
         }
     }

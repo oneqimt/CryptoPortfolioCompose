@@ -18,7 +18,7 @@ interface CryptoRepository {
 
     fun searchDatabase(searchQuery: String): Flow<List<CryptoValue>>
 
-    fun insertAll(varargs : List<CryptoValue>) : Flow<List<Long>>
+    fun insertAll(list : List<CryptoValue>) : Flow<List<Long>>
 
     suspend fun insertTotalValues(totalValues: TotalValues): Long
 

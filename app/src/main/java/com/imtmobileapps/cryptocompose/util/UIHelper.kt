@@ -34,15 +34,6 @@ enum class SearchAppBarState {
     CLOSED
 }
 
-enum class Action {
-    ADD,
-    UPDATE,
-    DELETE,
-    DELETE_ALL,
-    UNDO,
-    NO_ACTION
-}
-
 fun sortCryptoValueList(
     list: List<CryptoValue>,
     coinSort: CoinSort,

@@ -26,7 +26,6 @@ import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.TotalValues
 import com.imtmobileapps.cryptocompose.ui.theme.*
-import com.imtmobileapps.cryptocompose.util.Action
 import com.imtmobileapps.cryptocompose.util.RequestState
 import com.imtmobileapps.cryptocompose.util.RowType
 import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel

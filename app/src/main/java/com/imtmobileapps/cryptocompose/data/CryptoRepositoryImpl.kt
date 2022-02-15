@@ -8,6 +8,7 @@ import com.imtmobileapps.cryptocompose.model.TotalValues
 import com.imtmobileapps.cryptocompose.util.CoinSort
 import com.imtmobileapps.cryptocompose.util.Constants.CMC_LOGO_URL
 import com.imtmobileapps.cryptocompose.util.DataSource
+import com.imtmobileapps.cryptocompose.util.DataType
 import com.imtmobileapps.cryptocompose.util.RequestState
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
@@ -71,7 +72,7 @@ class CryptoRepositoryImpl @Inject constructor(
     override fun insertAll(list: List<CryptoValue>): Flow<List<Long>> {
         return flow {
 
-            var insertResult = localDataSource.insertAll(*list.toTypedArray())
+            val insertResult = localDataSource.insertAll(*list.toTypedArray())
 
             emit(RequestState.Success(insertResult).data)
         }

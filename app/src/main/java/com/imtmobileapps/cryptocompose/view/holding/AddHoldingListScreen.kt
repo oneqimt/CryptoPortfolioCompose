@@ -20,11 +20,14 @@ import com.imtmobileapps.cryptocompose.components.CircularProgressBar
 import com.imtmobileapps.cryptocompose.event.ListEvent
 import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.model.Coin
+import com.imtmobileapps.cryptocompose.util.DataType
 import com.imtmobileapps.cryptocompose.util.RequestState
 import com.imtmobileapps.cryptocompose.util.Routes
 import com.imtmobileapps.cryptocompose.view.appbar.SearchViewActionBar
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 import kotlinx.coroutines.flow.collect
+import logcat.LogPriority
+import logcat.logcat
 
 
 @ExperimentalMaterialApi
@@ -35,8 +38,11 @@ fun AddHoldingListScreen(
 ) {
 
     val TAG = "AddHoldingListScreen"
+
     val allCoins: State<RequestState<MutableList<Coin>>> =
         viewModel.allCoins.collectAsState()
+
+    val dataType by viewModel.dataType
 
     // System back button
     BackHandler {
@@ -75,41 +81,49 @@ fun AddHoldingListScreen(
         }
 
     ) {
-        val view = LocalView.current
-        val lazyListState = rememberLazyListState()
-        var text by remember { mutableStateOf("") }
 
-        when (allCoins.value) {
-            RequestState.Loading -> {
-                Column(
-                    modifier = Modifier.padding(30.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+        when (dataType) {
+            DataType.ALL_COINS -> {
+                when (allCoins.value) {
+                    RequestState.Loading -> {
+                        Column(
+                            modifier = Modifier.padding(30.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
 
-                ) {
-                    CircularProgressBar()
-                }
-            }
-
-            is RequestState.Success -> {
-
-                LazyColumn(
-                    // state = lazyListState,
-                    modifier = Modifier
-                        //.fillMaxSize()
-                        .padding(vertical = 4.dp)
-                ) {
-
-                    val list = (allCoins.value as RequestState.Success<MutableList<Coin>>).data
-                    items(list, key = {
-                        it.cmcRank
-                    }) {
-                        AddHoldingListItem(coin = it)
+                        ) {
+                            CircularProgressBar()
+                        }
                     }
-                }
+
+                    is RequestState.Success -> {
+
+                        val allCoinsList =
+                            (allCoins.value as RequestState.Success<MutableList<Coin>>).data
+
+                        LazyColumn(
+                            modifier = Modifier
+                                .padding(vertical = 4.dp)
+                        ) {
+
+                            items(allCoinsList, key = {
+                                it.cmcRank
+                            }) {
+                                AddHoldingListItem(coin = it)
+                            }
+
+                        }
+                    }
+                    else -> {}
+                }// end 1st when
             }
-            else -> {}
+
+            DataType.FILTERED_COINS -> {
+                FilteredCoinsView(viewModel = viewModel)
+            }
         }
+
+
     }
 }
 
