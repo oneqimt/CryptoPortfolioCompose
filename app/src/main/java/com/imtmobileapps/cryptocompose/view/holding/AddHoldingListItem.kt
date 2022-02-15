@@ -23,8 +23,7 @@ import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 @ExperimentalMaterialApi
 @Composable
 fun AddHoldingListItem(
-    coin: Coin,
-    viewModel: ManageHoldingsViewModel
+    coin: Coin
 ){
 
     Card(

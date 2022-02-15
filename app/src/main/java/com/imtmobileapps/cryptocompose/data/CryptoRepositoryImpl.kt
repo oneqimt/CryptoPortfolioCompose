@@ -121,7 +121,7 @@ class CryptoRepositoryImpl @Inject constructor(
         return localDataSource.getCacheDuration()
     }
 
-    override fun getAllCoins(): Flow<RequestState<List<Coin>>> {
+    override fun getAllCoins(): Flow<RequestState<MutableList<Coin>>> {
         return flow {
             val allCoins = remoteDataSource.getAllCoins()
 

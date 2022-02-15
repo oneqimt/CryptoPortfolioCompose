@@ -4,7 +4,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 
 object Constants {
 
-    const val BASE_URL = "https://www.imtmobileapps.com/cryptocompare/"
+    const val BASE_URL = "https://www.imtmobileapps.com/"
     const val CMC_LOGO_URL = "https://s2.coinmarketcap.com/static/img/coins/64x64/"
 
     // DataStore

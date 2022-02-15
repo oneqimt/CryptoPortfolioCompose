@@ -47,7 +47,7 @@ data class Coin(
 
     @SerializedName("cmc_rank")
     @ColumnInfo(name = "cmc_rank")
-    val cmcRank : Int? = null,
+    val cmcRank : Int = 0,
 
     @SerializedName("currentPrice")
     @ColumnInfo(name = "current_price")

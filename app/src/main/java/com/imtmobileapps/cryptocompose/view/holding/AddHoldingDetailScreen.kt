@@ -10,14 +10,11 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.imtmobileapps.cryptocompose.R
 import com.imtmobileapps.cryptocompose.ui.theme.coinNameTextColor
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarContentColor
 import com.imtmobileapps.cryptocompose.util.Action
-import com.imtmobileapps.cryptocompose.view.cryptolist.BackAction
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 
 @Composable
@@ -30,7 +27,7 @@ fun AddHoldingDetailScreen(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    BackAction(onBackClicked = navigateToHoldingListScreen)
+                    //BackAction(onBackClicked = navigateToHoldingListScreen)
                 },
                 title = {
                     Text(

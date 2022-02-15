@@ -15,6 +15,6 @@ interface CryptoApi {
     suspend fun getTotals(@Query("person_id") person_id: Int): TotalValues
 
     @GET("managecoins?action=cmccoins")
-    suspend fun getAllCoins() : List<Coin>
+    suspend fun getAllCoins() : MutableList<Coin>
 
 }

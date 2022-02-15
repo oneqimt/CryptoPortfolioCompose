@@ -3,6 +3,7 @@ package com.imtmobileapps.cryptocompose.view.cryptolist
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -18,23 +19,23 @@ import com.imtmobileapps.cryptocompose.ui.theme.fabBackgroundColor
 import com.imtmobileapps.cryptocompose.util.RequestState
 import com.imtmobileapps.cryptocompose.util.SearchAppBarState
 import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @ExperimentalMaterialApi
 @Composable
 fun PersonCoinsListScreen(
     onNavigate: (UIEvent.Navigate) -> Unit,
-    viewModel: CryptoListViewModel
+    viewModel: CryptoListViewModel,
 ) {
-
     val TAG = "PersonCoinsListScreen"
     val personCoins: State<RequestState<List<CryptoValue>>> =
         viewModel.personCoins.collectAsState()
 
-    val searchAppBarState: SearchAppBarState by viewModel.searchAppBarState
-    //val searchTextState: String by viewModel.searchTextState
-
     val scaffoldState = rememberScaffoldState()
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
@@ -60,20 +61,13 @@ fun PersonCoinsListScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
-
         topBar = {
-
             PersonCoinsListAppBar(
-                viewModel = viewModel,
-                searchAppBarState = searchAppBarState,
-                searchTextState = "searchTextState"
+                viewModel = viewModel
             )
-
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-
-                //viewModel.onEvent(ListEvent.OnListRefresh(3))
                 viewModel.onEvent(ListEvent.OnAddCoinClicked)
 
             }, backgroundColor = MaterialTheme.colors.fabBackgroundColor) {
@@ -102,6 +96,7 @@ fun PersonCoinsListScreen(
                     val list = (personCoins.value as RequestState.Success<List<CryptoValue>>).data
 
                     LazyColumn(
+                        state = listState,
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(vertical = 4.dp)
@@ -116,7 +111,13 @@ fun PersonCoinsListScreen(
                                 viewModel = viewModel)
 
                         }
+
+                        scope.launch {
+                            listState.animateScrollToItem(0, 0)
+                        }
+
                     }
+
                 }
 
                 else -> Unit

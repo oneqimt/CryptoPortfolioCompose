@@ -17,7 +17,7 @@ class RemoteDataSource @Inject constructor(
        return cryptoApi.getTotals(personId)
     }
 
-    suspend fun getAllCoins(): List<Coin>{
+    suspend fun getAllCoins(): MutableList<Coin>{
         return cryptoApi.getAllCoins()
     }
 

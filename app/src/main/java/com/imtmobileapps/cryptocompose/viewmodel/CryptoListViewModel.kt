@@ -41,15 +41,13 @@ class CryptoListViewModel @Inject constructor(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     // APP BARS
-    var searchAppBarState: MutableState<SearchAppBarState> =
+    /*var searchAppBarState: MutableState<SearchAppBarState> =
         mutableStateOf(SearchAppBarState.CLOSED)
+    val action: MutableState<Action> = mutableStateOf(Action.NO_ACTION)*/
 
-    val action: MutableState<Action> = mutableStateOf(Action.NO_ACTION)
-
-    // SEARCH - NOTE: we may use this in another ViewModel
     private val _searchedCoins =
         MutableStateFlow<RequestState<List<CryptoValue>>>(RequestState.Idle)
-    val searchedCoins: StateFlow<RequestState<List<CryptoValue>>> = _searchedCoins
+    private val searchedCoins: StateFlow<RequestState<List<CryptoValue>>> = _searchedCoins
 
     //SORT
     private val _sortState =
@@ -271,7 +269,7 @@ class CryptoListViewModel @Inject constructor(
         } catch (e: Exception) {
             _searchedCoins.value = RequestState.Error(e.localizedMessage as String)
         }
-        searchAppBarState.value = SearchAppBarState.TRIGGERED
+        //searchAppBarState.value = SearchAppBarState.TRIGGERED
     }
 
 

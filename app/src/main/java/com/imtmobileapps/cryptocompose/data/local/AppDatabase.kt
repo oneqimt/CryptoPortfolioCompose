@@ -11,7 +11,7 @@ import com.imtmobileapps.cryptocompose.model.TotalValues
 import com.imtmobileapps.cryptocompose.util.BigDecimalDoubleTypeConverter
 
 
-@Database(entities = [CryptoValue::class, Person::class, TotalValues::class], version = 1, exportSchema = false)
+@Database(entities = [CryptoValue::class, Person::class, TotalValues::class], version = 2, exportSchema = false)
 @TypeConverters(BigDecimalDoubleTypeConverter::class)
 abstract class AppDatabase : RoomDatabase(){
 
