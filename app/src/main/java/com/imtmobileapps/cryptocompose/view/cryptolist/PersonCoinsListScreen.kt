@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun PersonCoinsListScreen(
     onNavigate: (UIEvent.Navigate) -> Unit,
-    viewModel: CryptoListViewModel,
+    viewModel: CryptoListViewModel
 ) {
     val TAG = "PersonCoinsListScreen"
     val personCoins: State<RequestState<List<CryptoValue>>> =

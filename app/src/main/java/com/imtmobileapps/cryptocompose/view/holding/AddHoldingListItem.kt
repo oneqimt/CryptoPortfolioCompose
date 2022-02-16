@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.imtmobileapps.cryptocompose.event.ListEvent
 import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.ui.theme.cardBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.cardBorderColor
@@ -23,6 +24,7 @@ import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 @ExperimentalMaterialApi
 @Composable
 fun AddHoldingListItem(
+    viewModel: ManageHoldingsViewModel,
     coin: Coin
 ){
 
@@ -35,8 +37,7 @@ fun AddHoldingListItem(
         backgroundColor = MaterialTheme.colors.cardBackgroundColor,
         shape = RoundedCornerShape(corner = CornerSize(6.dp)),
         onClick = {
-            //viewModel.onEvent(ListEvent.OnAddCoinClicked(coin))
-            println("AddHoldingListItem and coin clicked $coin")
+            viewModel.onEvent(ListEvent.OnAllCoinClicked(coin))
         }
     ) {
 

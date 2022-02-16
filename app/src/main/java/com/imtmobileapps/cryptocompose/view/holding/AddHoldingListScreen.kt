@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarResult
@@ -14,7 +13,6 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.imtmobileapps.cryptocompose.components.CircularProgressBar
 import com.imtmobileapps.cryptocompose.event.ListEvent
@@ -22,19 +20,17 @@ import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.util.DataType
 import com.imtmobileapps.cryptocompose.util.RequestState
-import com.imtmobileapps.cryptocompose.util.Routes
 import com.imtmobileapps.cryptocompose.view.appbar.SearchViewActionBar
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 import kotlinx.coroutines.flow.collect
-import logcat.LogPriority
-import logcat.logcat
 
 
 @ExperimentalMaterialApi
 @Composable
 fun AddHoldingListScreen(
-    onNavigate: (UIEvent.Navigate) -> Unit,
-    viewModel: ManageHoldingsViewModel,
+    onNavigate: () -> Unit,
+    onPopBackStack: () -> Unit,
+    viewModel: ManageHoldingsViewModel
 ) {
 
     val TAG = "AddHoldingListScreen"
@@ -46,7 +42,7 @@ fun AddHoldingListScreen(
 
     // System back button
     BackHandler {
-        onNavigate(UIEvent.Navigate(Routes.PERSON_COINS_LIST))
+        onPopBackStack()
     }
 
     val scaffoldState = rememberScaffoldState()
@@ -63,9 +59,12 @@ fun AddHoldingListScreen(
                         viewModel.onEvent(ListEvent.OnUndoDeleteClick)
                     }
                 }
-                is UIEvent.Navigate -> {
-                    println("$TAG and UIEvent.Navigate called and route is ${event.route}")
-                    onNavigate(event)
+                is UIEvent.PopBackStack -> {
+                    onPopBackStack()
+                }
+
+                is UIEvent.Navigate ->{
+                    onNavigate()
                 }
 
                 else -> Unit
@@ -77,7 +76,7 @@ fun AddHoldingListScreen(
         scaffoldState = scaffoldState,
 
         topBar = {
-            SearchViewActionBar(viewModel = viewModel)
+            SearchViewActionBar(viewModel = viewModel, onPopBackStack = onPopBackStack)
         }
 
     ) {
@@ -109,7 +108,7 @@ fun AddHoldingListScreen(
                             items(allCoinsList, key = {
                                 it.cmcRank
                             }) {
-                                AddHoldingListItem(coin = it)
+                                AddHoldingListItem(coin = it, viewModel = viewModel)
                             }
 
                         }

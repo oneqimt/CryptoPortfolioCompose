@@ -111,7 +111,7 @@ fun PersonCoinsListItem(
                         modifier = Modifier.padding(2.dp),
                         text = currentPrice.toString(),
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.Red,
+                        color = MaterialTheme.colors.staticTextColor,
                         style = MaterialTheme.typography.caption,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis

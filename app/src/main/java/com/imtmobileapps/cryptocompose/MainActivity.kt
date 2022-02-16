@@ -18,6 +18,7 @@ import com.imtmobileapps.cryptocompose.ui.theme.CryptoComposeTheme
 import com.imtmobileapps.cryptocompose.util.Routes
 import com.imtmobileapps.cryptocompose.view.cryptolist.PersonCoinsDetailScreen
 import com.imtmobileapps.cryptocompose.view.cryptolist.PersonCoinsListScreen
+import com.imtmobileapps.cryptocompose.view.holding.AddHoldingDetailScreen
 import com.imtmobileapps.cryptocompose.view.holding.AddHoldingListScreen
 import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
@@ -70,10 +71,21 @@ class MainActivity : ComponentActivity() {
                     composable(
                         Routes.ADD_HOLDING_LIST
                     ){
-                        AddHoldingListScreen(onNavigate = {
-                            navController.navigate(it.route)
+                        AddHoldingListScreen(onPopBackStack = {
+                            navController.popBackStack()
                             println("MAIN Activity AddHoldingListScreen and onNavigate called and route is : $it.route")
-                        },viewModel = holdingsViewModel  )
+                        },viewModel = holdingsViewModel, onNavigate = {
+                            navController.navigate(Routes.ADD_HOLDING_DETAIL)
+                        }  )
+                    }
+
+                    composable(
+                        Routes.ADD_HOLDING_DETAIL
+                    ){
+                        AddHoldingDetailScreen(viewModel = holdingsViewModel, onPopBackStack = {
+                           navController.popBackStack()
+
+                        })
                     }
 
                 }//end nav host

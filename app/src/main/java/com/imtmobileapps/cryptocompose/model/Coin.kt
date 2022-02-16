@@ -10,7 +10,7 @@ import java.math.BigDecimal
 
 @Entity
 @Parcelize
-data class Coin(
+data class Coin (
     @SerializedName("coin_id")
     @ColumnInfo(name = "coin_id")
     val coinId: Int? = null,

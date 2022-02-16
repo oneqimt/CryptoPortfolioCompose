@@ -14,69 +14,65 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.imtmobileapps.cryptocompose.R
-import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarContentColor
-import com.imtmobileapps.cryptocompose.util.Routes
 import com.imtmobileapps.cryptocompose.util.SearchAppBarState
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
-import logcat.LogPriority
 import logcat.logcat
 
 @Composable
 fun SearchViewActionBar(
-    viewModel: ManageHoldingsViewModel
-){
+    viewModel: ManageHoldingsViewModel,
+    onPopBackStack: () -> Unit
+) {
     val searchState by viewModel.searchState
     val searchTextState by viewModel.searchTextState
     val TAG = "SearchViewActionBar"
 
-            AppBar(
-                searchState = searchState,
-                searchTextState = searchTextState,
-                onTextChange = {
-                    viewModel.updateSearchTextState(it)
-                    viewModel.filterListForSearch()
-                    logcat(TAG) { "onTextChange and it is : $it" }
-                },
-                onCloseClicked = {
-                    viewModel.updateSearchState(SearchAppBarState.CLOSED)
-                    logcat(TAG) { "onCloseClicked" }
-                    viewModel.fetchAllCoinsFromRemote()
+    AppBar(
+        searchState = searchState,
+        searchTextState = searchTextState,
+        onTextChange = {
+            viewModel.updateSearchTextState(it)
+            viewModel.filterListForSearch()
+            logcat(TAG) { "onTextChange and it is : $it" }
+        },
+        onCloseClicked = {
+            viewModel.updateSearchState(SearchAppBarState.CLOSED)
+            logcat(TAG) { "onCloseClicked" }
+            viewModel.fetchAllCoinsFromRemote()
 
-                },
-                onSearchClicked = {
-                    logcat(TAG) { "onSearchClicked" }
-                },
-                onSearchTriggered = {
-                    viewModel.updateSearchState(SearchAppBarState.OPENED)
-                    logcat(TAG) { "onSearchTriggered" }
-                },
-                onNavigate = {
-                    logcat(TAG) { "AppBar onNavigate called" }
-                    viewModel.onEvent(UIEvent.Navigate(it.route))
-                }
-            )
+        },
+        onSearchTriggered = {
+            viewModel.updateSearchState(SearchAppBarState.OPENED)
+            // clear the search text if it has a value
+            viewModel.updateSearchTextState("")
+            logcat(TAG) { "onSearchTriggered" }
+        },
+        onPopBackStack = {
+            onPopBackStack()
+        }
+
+    )
 }
 
 @Composable
 fun DefaultAppBar(
     onSearchClicked: () -> Unit,
-    onNavigate: (UIEvent.Navigate) -> Unit
-){
+    onPopBackStack: () -> Unit
+) {
     TopAppBar(
         elevation = 4.dp,
         navigationIcon = {
 
             IconButton(onClick = {
                 logcat("DefaultAppBar") { "DefaultAppBar onNavigate called" }
-                onNavigate(UIEvent.Navigate(Routes.PERSON_COINS_LIST))
+                onPopBackStack()
             }
             ) {
                 Icon(Icons.Filled.ArrowBack, "backIcon")
@@ -110,14 +106,14 @@ fun DefaultAppBar(
 fun SearchAppBar(
     text: String,
     onTextChange: (String) -> Unit,
-    onCloseClicked: () -> Unit
+    onCloseClicked: () -> Unit,
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),
         elevation = AppBarDefaults.TopAppBarElevation,
-        color = MaterialTheme.colors.primary
+        color = MaterialTheme.colors.topAppBarBackgroundColor
     ) {
         TextField(
             value = text,
@@ -166,6 +162,7 @@ fun SearchAppBar(
                     )
                 }
             },
+
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done
             ),
@@ -180,6 +177,7 @@ fun SearchAppBar(
             )
         )
     }
+
 }
 
 @Composable
@@ -188,15 +186,14 @@ fun AppBar(
     searchTextState: String,
     onTextChange: (String) -> Unit,
     onCloseClicked: () -> Unit,
-    onSearchClicked: (String) -> Unit,
     onSearchTriggered: () -> Unit,
-    onNavigate: (UIEvent.Navigate) -> Unit
+    onPopBackStack: () -> Unit,
 ) {
     when (searchState) {
         SearchAppBarState.CLOSED -> {
             DefaultAppBar(
                 onSearchClicked = onSearchTriggered,
-                onNavigate = onNavigate
+                onPopBackStack = onPopBackStack
             )
         }
         SearchAppBarState.OPENED -> {
@@ -204,7 +201,6 @@ fun AppBar(
                 text = searchTextState,
                 onTextChange = onTextChange,
                 onCloseClicked = onCloseClicked
-                //onSearchClicked = onSearchClicked
             )
         }
     }

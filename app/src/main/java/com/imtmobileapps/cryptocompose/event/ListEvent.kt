@@ -6,7 +6,10 @@ import com.imtmobileapps.cryptocompose.model.CryptoValue
 sealed class ListEvent():UIEvent(){
 
     data class OnAppInit(val personId: Int) : ListEvent()
+    // PersonCoins
     data class OnCoinClicked(val cryptoValue: CryptoValue) : ListEvent()
+    // AllCoins
+    data class OnAllCoinClicked(val coin: Coin) : ListEvent()
     data class OnListRefresh(val personId: Int): ListEvent()
     object OnAddCoinClicked :ListEvent()
 

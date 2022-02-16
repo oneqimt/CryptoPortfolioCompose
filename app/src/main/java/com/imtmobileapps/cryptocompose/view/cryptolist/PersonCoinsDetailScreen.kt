@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.collect
 @Composable
 fun PersonCoinsDetailScreen(
     onPopBackStack: () -> Unit,
-    viewModel: CryptoListViewModel,
+    viewModel: CryptoListViewModel
 ) {
 
     BackHandler {

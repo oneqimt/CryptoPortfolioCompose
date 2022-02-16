@@ -4,10 +4,13 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imtmobileapps.cryptocompose.data.CryptoRepositoryImpl
+import com.imtmobileapps.cryptocompose.event.ListEvent
 import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.model.Coin
+import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.util.DataType
 import com.imtmobileapps.cryptocompose.util.RequestState
+import com.imtmobileapps.cryptocompose.util.Routes
 import com.imtmobileapps.cryptocompose.util.SearchAppBarState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -16,6 +19,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import logcat.LogPriority
+import logcat.logcat
 import java.util.*
 import javax.inject.Inject
 
@@ -48,6 +53,10 @@ class ManageHoldingsViewModel @Inject constructor(
 
     private var searchCoinList: MutableList<Coin> = mutableListOf()
 
+    // This in not wrapped with RequestState because it is local
+    private val _selectedCoin: MutableStateFlow<Coin?> = MutableStateFlow(null)
+    val selectedCoin: StateFlow<Coin?> = _selectedCoin
+
     init {
         fetchAllCoinsFromRemote()
     }
@@ -63,8 +72,11 @@ class ManageHoldingsViewModel @Inject constructor(
     fun onEvent(event: UIEvent) {
 
         when (event) {
-            is UIEvent.Navigate -> {
-                sendUiEvent(UIEvent.Navigate(event.route))
+            is ListEvent.OnAllCoinClicked -> {
+                logcat(LogPriority.INFO) { "OnAllCoinClicked and coin is: ${event.coin}" }
+                _selectedCoin.value = event.coin
+                val route = Routes.ADD_HOLDING_DETAIL
+                sendUiEvent(UIEvent.Navigate(route))
             }
             else -> {}
         }
@@ -77,17 +89,16 @@ class ManageHoldingsViewModel @Inject constructor(
 
         val allCoinsList = (allCoins.value as RequestState.Success).data
 
-        println("$TAG DENNIS and searchTextState is ${searchTextState.value}")
+        println("$TAG and searchTextState is ${searchTextState.value}")
         // clear _filteredCoins
         _filteredCoins.value = RequestState.Success(mutableStateListOf())
         searchCoinList.clear()
 
         allCoinsList.let {
-            //sortedList = it.sortedWith(compareBy(Coin::coinName))
+
             for (coin in it.listIterator()) {
 
-                if (coin.coinName?.startsWith(searchTextState.value, true)  == true) {
-                    //println("$TAG DENNIS and coin to add is: ${coin.coinName} ${coin.cmcRank}")
+                if (coin.coinName?.startsWith(searchTextState.value, true) == true) {
                     searchCoinList.add(coin)
                 }
             }

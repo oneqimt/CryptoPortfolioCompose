@@ -40,11 +40,6 @@ class CryptoListViewModel @Inject constructor(
     private val _uiEvent = Channel<UIEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    // APP BARS
-    /*var searchAppBarState: MutableState<SearchAppBarState> =
-        mutableStateOf(SearchAppBarState.CLOSED)
-    val action: MutableState<Action> = mutableStateOf(Action.NO_ACTION)*/
-
     private val _searchedCoins =
         MutableStateFlow<RequestState<List<CryptoValue>>>(RequestState.Idle)
     private val searchedCoins: StateFlow<RequestState<List<CryptoValue>>> = _searchedCoins
