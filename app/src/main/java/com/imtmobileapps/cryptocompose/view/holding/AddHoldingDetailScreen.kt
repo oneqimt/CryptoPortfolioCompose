@@ -1,42 +1,46 @@
 package com.imtmobileapps.cryptocompose.view.holding
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import com.imtmobileapps.cryptocompose.R
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.imtmobileapps.cryptocompose.components.AddHoldingDetailCard
 import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.model.CryptoValue
-import com.imtmobileapps.cryptocompose.ui.theme.*
+import com.imtmobileapps.cryptocompose.ui.theme.topAppBarBackgroundColor
+import com.imtmobileapps.cryptocompose.ui.theme.topAppBarContentColor
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 import kotlinx.coroutines.flow.collect
+import logcat.logcat
 
 @Composable
 fun AddHoldingDetailScreen(
     viewModel: ManageHoldingsViewModel,
-    onPopBackStack: () -> Unit
+    onPopBackStack: () -> Unit,
 ) {
 
     BackHandler {
         onPopBackStack()
     }
 
+    val TAG = "AddHoldingDetailScreen"
+
     val selectedCoin = viewModel.selectedCoin.collectAsState()
     val selectedCryptoValue = viewModel.selectedCryptoValue.collectAsState()
+
+    val quantityValueText = rememberSaveable {
+        mutableStateOf("")
+    }
+
+    val costValueText = rememberSaveable {
+        mutableStateOf("")
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
@@ -71,7 +75,7 @@ fun AddHoldingDetailScreen(
         content = {
 
             var coin: Coin? = null
-            var crypto : CryptoValue? = null
+            var crypto: CryptoValue? = null
             selectedCoin.value.let {
                 if (it != null) {
                     coin = it
@@ -79,12 +83,30 @@ fun AddHoldingDetailScreen(
 
             }
             selectedCryptoValue.value.let {
-                if (it != null){
+                if (it != null) {
                     crypto = it
                 }
             }
 
-            AddHoldingDetailCard(selectedCoin = coin, selectedCryptoValue = crypto)
+            AddHoldingDetailCard(
+                quantityValueText = quantityValueText.value,
+                costValueText = costValueText.value,
+                selectedCoin = coin,
+                selectedCryptoValue = crypto,
+                onQuantityChanged = {
+                    quantityValueText.value = it
+                    logcat(TAG) { "onQuantityChanged and quantity is: $it" }
+                },
+                onCostChanged = {
+                    costValueText.value = it
+                    logcat(TAG) { "onCostChanged and cost is: $it" }
+                },
+                addHoldingClicked = {
+                    logcat(TAG) { "addHoldingClicked! and quantity is : ${quantityValueText.value}" }
+                    logcat(TAG) { "addHoldingClicked! and cost is : ${costValueText.value}" }
+                }
+
+            )
 
         }
 

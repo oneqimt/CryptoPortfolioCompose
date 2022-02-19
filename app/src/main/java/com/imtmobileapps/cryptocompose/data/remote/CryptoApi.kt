@@ -42,4 +42,8 @@ interface CryptoApi {
     @POST("signup")
     fun signUp(@Body signUp: SignUp): SignUp
 
+    //Stubbed only, we need a new provider
+   /* @GET("coinnews")
+    fun getCoinNews(@Query("coin_name") coin_name: String): <List<Article>*/
+
 }

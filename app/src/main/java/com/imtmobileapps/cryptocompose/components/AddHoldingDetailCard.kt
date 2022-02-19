@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,13 +28,14 @@ import logcat.logcat
 
 @Composable
 fun AddHoldingDetailCard(
+    quantityValueText: String,
+    costValueText: String,
     selectedCoin: Coin?,
     selectedCryptoValue: CryptoValue?,
+    onQuantityChanged: (String) -> Unit,
+    onCostChanged : (String) -> Unit,
+    addHoldingClicked: () -> Unit
 ) {
-
-    var quantityText by remember { mutableStateOf(TextFieldValue("")) }
-    var costPerCoinText by remember { mutableStateOf(TextFieldValue("")) }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -157,11 +159,11 @@ fun AddHoldingDetailCard(
                 horizontalArrangement = Arrangement.Center
             ) {
                 TextField(
-                    value = quantityText,
+                    value = quantityValueText,
                     label = { Text(text = stringResource(id = R.string.quantity)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     onValueChange = {
-                        quantityText = it
+                       onQuantityChanged(it)
                     }
                 )
             }// end 6th row
@@ -171,11 +173,11 @@ fun AddHoldingDetailCard(
                 horizontalArrangement = Arrangement.Center
             ) {
                 TextField(
-                    value = costPerCoinText,
+                    value = costValueText,
                     label = { Text(text = stringResource(id = R.string.cost_per_coin)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     onValueChange = {
-                        costPerCoinText = it
+                        onCostChanged(it)
                     }
                 )
             }// end 7th row
@@ -185,13 +187,7 @@ fun AddHoldingDetailCard(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Button(onClick = {
-                    if (quantityText.text.isNotEmpty()) {
-                        logcat { "Button clicked and values are : quantityText is  ${quantityText.text}"}
-                    }
-                    if (costPerCoinText.text.isNotEmpty()) {
-                        logcat { "Button clicked and costPerCoinText is ${costPerCoinText.text}" }
-                    }
-
+                    addHoldingClicked()
                 }, modifier = Modifier.padding(8.dp)) {
                     Text(text = stringResource(id = R.string.add_holding))
                 }
@@ -206,8 +202,19 @@ fun AddHoldingDetailCard(
 @Preview
 @Composable
 fun AddHoldingDetailCardPreview() {
+    val quantityValueText = "2"
+    val costValueText = "1.236"
     val selectedCoin: Coin = getDummyCoin(0)
     val selectedCryptoValue: CryptoValue = getDummyCryptoValue()
-    AddHoldingDetailCard(selectedCoin, selectedCryptoValue)
+
+    AddHoldingDetailCard(
+        quantityValueText = quantityValueText,
+        costValueText = costValueText,
+        selectedCoin,
+        selectedCryptoValue,
+        onQuantityChanged = {},
+        onCostChanged = {},
+        addHoldingClicked = {}
+    )
 
 }
