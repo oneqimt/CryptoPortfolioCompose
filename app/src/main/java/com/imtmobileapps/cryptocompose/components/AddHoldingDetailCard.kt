@@ -28,11 +28,11 @@ import logcat.logcat
 @Composable
 fun AddHoldingDetailCard(
     selectedCoin: Coin?,
-    selectedCryptoValue: CryptoValue?
+    selectedCryptoValue: CryptoValue?,
 ) {
 
-    var quantityText  by remember { mutableStateOf(TextFieldValue("")) }
-    var costPerCoinText  by remember { mutableStateOf(TextFieldValue("")) }
+    var quantityText by remember { mutableStateOf(TextFieldValue("")) }
+    var costPerCoinText by remember { mutableStateOf(TextFieldValue("")) }
 
     Card(
         modifier = Modifier
@@ -124,7 +124,8 @@ fun AddHoldingDetailCard(
             ) {
                 selectedCryptoValue?.quantity?.let {
                     Text(modifier = Modifier.padding(2.dp),
-                        text = stringResource(id = R.string.quantity_held_add_holding, it.toString()),
+                        text = stringResource(id = R.string.quantity_held_add_holding,
+                            it.toString()),
                         color = MaterialTheme.colors.coinNameTextColor,
                         style = MaterialTheme.typography.subtitle2,
                         maxLines = 1,
@@ -152,7 +153,7 @@ fun AddHoldingDetailCard(
             }// end 5th row
 
             Spacer(modifier = Modifier.height(30.dp))
-            Row( modifier = Modifier.fillMaxWidth(),
+            Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
                 TextField(
@@ -166,7 +167,7 @@ fun AddHoldingDetailCard(
             }// end 6th row
 
             Spacer(modifier = Modifier.height(20.dp))
-            Row( modifier = Modifier.fillMaxWidth(),
+            Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
                 TextField(
@@ -180,11 +181,17 @@ fun AddHoldingDetailCard(
             }// end 7th row
 
             Spacer(modifier = Modifier.height(10.dp))
-            Row( modifier = Modifier.fillMaxWidth(),
+            Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Button(onClick = {
-                    logcat { "Button clicked and values are : quantityText is  $quantityText costPerCoinText is $costPerCoinText" }
+                    if (quantityText.text.isNotEmpty()) {
+                        logcat { "Button clicked and values are : quantityText is  ${quantityText.text}"}
+                    }
+                    if (costPerCoinText.text.isNotEmpty()) {
+                        logcat { "Button clicked and costPerCoinText is ${costPerCoinText.text}" }
+                    }
+
                 }, modifier = Modifier.padding(8.dp)) {
                     Text(text = stringResource(id = R.string.add_holding))
                 }
