@@ -17,7 +17,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.imtmobileapps.cryptocompose.R
+import com.imtmobileapps.cryptocompose.components.AddHoldingDetailCard
 import com.imtmobileapps.cryptocompose.event.UIEvent
+import com.imtmobileapps.cryptocompose.model.Coin
+import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.ui.theme.*
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 import kotlinx.coroutines.flow.collect
@@ -25,7 +28,7 @@ import kotlinx.coroutines.flow.collect
 @Composable
 fun AddHoldingDetailScreen(
     viewModel: ManageHoldingsViewModel,
-    onPopBackStack: () -> Unit,
+    onPopBackStack: () -> Unit
 ) {
 
     BackHandler {
@@ -33,6 +36,7 @@ fun AddHoldingDetailScreen(
     }
 
     val selectedCoin = viewModel.selectedCoin.collectAsState()
+    val selectedCryptoValue = viewModel.selectedCryptoValue.collectAsState()
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
@@ -65,80 +69,23 @@ fun AddHoldingDetailScreen(
         },
 
         content = {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(2.dp),
-                elevation = 2.dp,
-                border = BorderStroke(0.3.dp, MaterialTheme.colors.cardBorderColor),
-                backgroundColor = MaterialTheme.colors.cardBackgroundColor,
-                shape = RoundedCornerShape(corner = CornerSize(6.dp))
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(
-                        modifier = Modifier.padding(10.dp, 20.dp)
 
-                    ) {
-                        selectedCoin.value?.coinName?.let { coinName ->
-                            Text(
-                                modifier = Modifier.padding(2.dp),
-                                text = coinName,
-                                color = MaterialTheme.colors.coinNameTextColor,
-                                style = MaterialTheme.typography.h6,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                    Column(
-                        modifier = Modifier.padding(10.dp)
+            var coin: Coin? = null
+            var crypto : CryptoValue? = null
+            selectedCoin.value.let {
+                if (it != null) {
+                    coin = it
+                }
 
-                    ) {
-                        selectedCoin.value?.coinSymbol?.let { coinSymbol ->
-                            Text(
-                                modifier = Modifier.padding(2.dp),
-                                text = coinSymbol,
-                                color = MaterialTheme.colors.coinNameTextColor,
-                                style = MaterialTheme.typography.h6,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                } // end 1st row
-                //Spacer(Modifier.height(40.dp))
-
-                Column(modifier = Modifier.padding(10.dp, 70.dp)) {
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(10.dp)
-
-                        ) {
-                            selectedCoin.value?.currentPrice?.let { currentPrice ->
-                                Text(
-                                    modifier = Modifier.padding(2.dp),
-                                    text = stringResource(id = R.string.current_price_add_holding,
-                                        currentPrice.toPlainString()),
-                                    color = MaterialTheme.colors.coinNameTextColor,
-                                    style = MaterialTheme.typography.h6,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        }
-                    }
+            }
+            selectedCryptoValue.value.let {
+                if (it != null){
+                    crypto = it
                 }
             }
+
+            AddHoldingDetailCard(selectedCoin = coin, selectedCryptoValue = crypto)
+
         }
 
     )

@@ -15,6 +15,10 @@ class LocalDataSource @Inject constructor(
 
 ) {
 
+    suspend fun getCoin(coinName: String) : CryptoValue{
+        return cryptoValuesDao.getCoin(coinName = coinName)
+    }
+
     suspend fun searchDatabase(searchQuery: String) : List<CryptoValue> {
         return cryptoValuesDao.searchDatabase(searchQuery = searchQuery)
     }

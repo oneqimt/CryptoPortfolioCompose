@@ -27,7 +27,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ManageHoldingsViewModel @Inject constructor(
-    private val repository: CryptoRepositoryImpl,
+    private val repository: CryptoRepositoryImpl
 ) : ViewModel() {
 
     private val _searchState: MutableState<SearchAppBarState> =
@@ -57,6 +57,9 @@ class ManageHoldingsViewModel @Inject constructor(
     private val _selectedCoin: MutableStateFlow<Coin?> = MutableStateFlow(null)
     val selectedCoin: StateFlow<Coin?> = _selectedCoin
 
+    private val _selectedCryptoValue: MutableStateFlow<CryptoValue?> = MutableStateFlow(value = null)
+    val selectedCryptoValue : StateFlow<CryptoValue?> = _selectedCryptoValue
+
     init {
         fetchAllCoinsFromRemote()
     }
@@ -73,8 +76,11 @@ class ManageHoldingsViewModel @Inject constructor(
 
         when (event) {
             is ListEvent.OnAllCoinClicked -> {
-                logcat(LogPriority.INFO) { "OnAllCoinClicked and coin is: ${event.coin}" }
+                //logcat(LogPriority.INFO) { "OnAllCoinClicked and coin is: ${event.coin}" }
                 _selectedCoin.value = event.coin
+                // get the associated CryptoValue, if it is null, it means the user does NOT have that coin yet
+                // so that we may use some of the attributes in AddHoldingDetailScreen
+                event.coin.coinName?.let { getSelectedCryptoValue(it) }
                 val route = Routes.ADD_HOLDING_DETAIL
                 sendUiEvent(UIEvent.Navigate(route))
             }
@@ -104,6 +110,19 @@ class ManageHoldingsViewModel @Inject constructor(
             }
             val temp = RequestState.Success(searchCoinList.toMutableStateList())
             _filteredCoins.value = RequestState.Success(temp).data
+        }
+    }
+
+    private fun getSelectedCryptoValue(coinName: String){
+        try {
+            viewModelScope.launch {
+                repository.getCoin(coinName).collect {
+                    _selectedCryptoValue.value = it
+                    logcat("$TAG"){"selectedCryptoValue is: ${selectedCryptoValue.value}"}
+                }
+            }
+        }catch (e: Exception){
+            logcat(TAG, LogPriority.ERROR) { e.localizedMessage!! }
         }
     }
 

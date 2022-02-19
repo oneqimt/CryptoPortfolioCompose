@@ -26,6 +26,7 @@ import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
 @Composable
 fun PersonCoinsListItem(
     cryptoValue: CryptoValue,
+    // TODO don't add viewModel here, pass lambda instead
     viewModel: CryptoListViewModel
 ) {
 

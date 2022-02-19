@@ -56,7 +56,7 @@ class CryptoListViewModel @Inject constructor(
     // CACHE DURATION
 
     // NOTE : personId will come from login layer when it is built
-    // And these calls probably will be made from LoginComposable
+    // And these calls probably will be made from LoginViewModel
     init {
 
         fetchCoinsFromRemote(1)

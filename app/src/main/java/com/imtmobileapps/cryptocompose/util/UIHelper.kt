@@ -64,11 +64,11 @@ fun getDummyCryptoValue(): CryptoValue {
         id = "",
         USD = "",
         coin = getDummyCoin(1),
-        holdingValue = "",
-        percentage = "",
-        cost = "",
-        increaseDecrease = "",
-        quantity = 0.0
+        holdingValue = "testing",
+        percentage = "percentage",
+        cost = "cost",
+        increaseDecrease = "inc/de",
+        quantity = 0.12
     )
 }
 
@@ -88,11 +88,11 @@ fun getDummyCoin(index: Int): Coin {
     return Coin(
         0,
         "Dummy",
-        "",
+        "DUM",
         1,
-        "",
-        "",
-        "",
+        "slug",
+        "imageurl",
+        "largeimageurl",
         BigDecimal.valueOf(0.123455),
         index,
         BigDecimal.valueOf(0.123455)

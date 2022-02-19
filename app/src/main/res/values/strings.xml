@@ -4,6 +4,8 @@
     <string name="quantity_held">Quantity Held:</string>
     <string name="holding_value">Holding Value:</string>
     <string name="your_cost">Your Cost:</string>
+    <string name="cost_per_coin">Cost Per Coin</string>
+    <string name="quantity">Quantity</string>
     <string name="total_value">Total Value:</string>
     <string name="total_cost">Total Cost:</string>
     <string name="total_portfolio_holdings">Total Portfolio Holdings</string>
@@ -16,5 +18,9 @@
     <string name="delete_all_action">Delete All Coins</string>
     <string name="back_arrow">Back Arrow</string>
     <string name="add_holding">Add Holding</string>
+    <string name="current_price_add_holding">Current Price: \%1$s</string>
+    <string name="you_have">You currently have \%1$s in your holdings</string>
+    <string name="quantity_held_add_holding">Quantity Held: \%1$s</string>
+    <string name="holding_value_add_holding">Holding Value: \%1$s</string>
 
 </resources>

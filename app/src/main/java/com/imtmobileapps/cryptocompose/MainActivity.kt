@@ -73,7 +73,6 @@ class MainActivity : ComponentActivity() {
                     ){
                         AddHoldingListScreen(onPopBackStack = {
                             navController.popBackStack()
-                            println("MAIN Activity AddHoldingListScreen and onNavigate called and route is : $it.route")
                         },viewModel = holdingsViewModel, onNavigate = {
                             navController.navigate(Routes.ADD_HOLDING_DETAIL)
                         }  )

@@ -24,6 +24,7 @@ import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 @ExperimentalMaterialApi
 @Composable
 fun AddHoldingListItem(
+    // TODO don't add viewModel here, pass lambda instead
     viewModel: ManageHoldingsViewModel,
     coin: Coin
 ){

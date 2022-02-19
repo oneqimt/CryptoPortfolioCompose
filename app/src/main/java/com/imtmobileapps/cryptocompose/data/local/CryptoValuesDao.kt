@@ -14,8 +14,8 @@ interface CryptoValuesDao {
     @Query(value = "SELECT * FROM cryptovalue")
     suspend fun getPersonCoins(): List<CryptoValue>
 
-    @Query(value = "SELECT * FROM cryptovalue WHERE uuid = :cryptoId")
-    suspend fun getCoin(cryptoId: Int):CryptoValue
+    @Query(value = "SELECT * FROM cryptovalue WHERE coin_name = :coinName")
+    suspend fun getCoin(coinName: String):CryptoValue
 
     @Query(value = "DELETE FROM cryptovalue")
     suspend fun deleteAllCoins()

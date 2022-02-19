@@ -135,5 +135,12 @@ class CryptoRepositoryImpl @Inject constructor(
             emit(RequestState.Success(allCoins))
         }
     }
+
+    override fun getCoin(coinName: String): Flow<CryptoValue> {
+        return flow{
+          val cryptoValue =   localDataSource.getCoin(coinName = coinName)
+            emit(cryptoValue)
+        }
+    }
 }
 

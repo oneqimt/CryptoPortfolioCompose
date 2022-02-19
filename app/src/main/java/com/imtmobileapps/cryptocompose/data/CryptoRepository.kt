@@ -14,6 +14,8 @@ interface CryptoRepository {
 
     fun getAllCoins(): Flow<RequestState<List<Coin>>>
 
+    fun getCoin(coinName : String): Flow<CryptoValue>
+
     fun getTotalValues(personId: Int): Flow<RequestState<TotalValues>>
 
     fun searchDatabase(searchQuery: String): Flow<List<CryptoValue>>
