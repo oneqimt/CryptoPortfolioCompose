@@ -24,8 +24,7 @@ import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 @ExperimentalMaterialApi
 @Composable
 fun AddHoldingListItem(
-    // TODO don't add viewModel here, pass lambda instead
-    viewModel: ManageHoldingsViewModel,
+    onEvent: (ListEvent) -> Unit,
     coin: Coin
 ){
 
@@ -38,7 +37,7 @@ fun AddHoldingListItem(
         backgroundColor = MaterialTheme.colors.cardBackgroundColor,
         shape = RoundedCornerShape(corner = CornerSize(6.dp)),
         onClick = {
-            viewModel.onEvent(ListEvent.OnAllCoinClicked(coin))
+            onEvent(ListEvent.OnAllCoinClicked(coin))
         }
     ) {
 

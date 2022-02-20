@@ -108,7 +108,10 @@ fun AddHoldingListScreen(
                             items(allCoinsList, key = {
                                 it.cmcRank
                             }) {
-                                AddHoldingListItem(coin = it, viewModel = viewModel)
+                                AddHoldingListItem(
+                                    coin = it,
+                                    onEvent = viewModel::onEvent
+                                )
                             }
 
                         }

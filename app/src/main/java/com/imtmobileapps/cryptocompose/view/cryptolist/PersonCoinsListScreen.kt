@@ -106,9 +106,9 @@ fun PersonCoinsListScreen(
                         }) { cryptoValue ->
 
                             PersonCoinsListItem(
-                                //onEvent = viewModel::onEvent,
-                                cryptoValue = cryptoValue,
-                                viewModel = viewModel)
+                                onEvent = viewModel::onEvent,
+                                cryptoValue = cryptoValue
+                            )
 
                         }
 

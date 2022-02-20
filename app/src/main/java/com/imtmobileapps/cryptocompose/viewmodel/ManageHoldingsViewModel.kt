@@ -79,7 +79,6 @@ class ManageHoldingsViewModel @Inject constructor(
                 //logcat(LogPriority.INFO) { "OnAllCoinClicked and coin is: ${event.coin}" }
                 _selectedCoin.value = event.coin
                 // get the associated CryptoValue, if it is null, it means the user does NOT have that coin yet
-                // so that we may use some of the attributes in AddHoldingDetailScreen
                 event.coin.coinName?.let { getSelectedCryptoValue(it) }
                 val route = Routes.ADD_HOLDING_DETAIL
                 sendUiEvent(UIEvent.Navigate(route))

@@ -49,7 +49,10 @@ fun FilteredCoinsView(
                 items(filteredCoinsList, key = {
                     it.cmcRank
                 }) {
-                    AddHoldingListItem(coin = it, viewModel = viewModel)
+                    AddHoldingListItem(
+                        coin = it,
+                        onEvent = viewModel::onEvent
+                    )
                 }
             }
         }

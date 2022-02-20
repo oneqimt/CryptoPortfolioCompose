@@ -102,6 +102,7 @@ fun AddHoldingDetailScreen(
                     logcat(TAG) { "onCostChanged and cost is: $it" }
                 },
                 addHoldingClicked = {
+                    // TODO call the service
                     logcat(TAG) { "addHoldingClicked! and quantity is : ${quantityValueText.value}" }
                     logcat(TAG) { "addHoldingClicked! and cost is : ${costValueText.value}" }
                 }
