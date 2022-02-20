@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import logcat.LogPriority
 import logcat.logcat
-import java.util.*
 import javax.inject.Inject
 
 
@@ -91,11 +90,9 @@ class ManageHoldingsViewModel @Inject constructor(
     fun filterListForSearch() {
 
         _dataType.value = DataType.FILTERED_COINS
-
         val allCoinsList = (allCoins.value as RequestState.Success).data
-
         println("$TAG and searchTextState is ${searchTextState.value}")
-        // clear _filteredCoins
+       // clear the lists
         _filteredCoins.value = RequestState.Success(mutableStateListOf())
         searchCoinList.clear()
 
@@ -117,7 +114,7 @@ class ManageHoldingsViewModel @Inject constructor(
             viewModelScope.launch {
                 repository.getCoin(coinName).collect {
                     _selectedCryptoValue.value = it
-                    logcat("$TAG"){"selectedCryptoValue is: ${selectedCryptoValue.value}"}
+                    logcat(TAG){"selectedCryptoValue is: ${selectedCryptoValue.value}"}
                 }
             }
         }catch (e: Exception){
@@ -136,16 +133,12 @@ class ManageHoldingsViewModel @Inject constructor(
                 repository.getAllCoins().collect {
                     _allCoins.value = RequestState.Success(it).data
                     _filteredCoins.value = RequestState.Success(it).data
-                    //sendUiEvent(ListEvent.OnAppInit(personId))
                 }
-
-
             }
         } catch (e: Exception) {
             _allCoins.value = RequestState.Error(e.localizedMessage as String)
             _filteredCoins.value = RequestState.Error(e.localizedMessage as String)
         }
-
     }
 
     private fun sendUiEvent(event: UIEvent) {

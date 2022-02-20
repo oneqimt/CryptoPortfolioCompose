@@ -18,7 +18,7 @@ import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.util.RequestState
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 
-@OptIn(ExperimentalMaterialApi::class)
+@ExperimentalMaterialApi
 @Composable
 fun FilteredCoinsView(
     viewModel: ManageHoldingsViewModel
