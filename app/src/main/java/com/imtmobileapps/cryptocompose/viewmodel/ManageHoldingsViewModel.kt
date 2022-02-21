@@ -118,7 +118,7 @@ class ManageHoldingsViewModel @Inject constructor(
                 }
             }
         }catch (e: Exception){
-            logcat(TAG, LogPriority.ERROR) { e.localizedMessage!! }
+            logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
         }
     }
 
