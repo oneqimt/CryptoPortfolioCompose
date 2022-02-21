@@ -22,7 +22,7 @@ import logcat.logcat
 @Composable
 fun AddHoldingDetailScreen(
     viewModel: ManageHoldingsViewModel,
-    onPopBackStack: () -> Unit,
+    onPopBackStack: () -> Unit
 ) {
 
     BackHandler {

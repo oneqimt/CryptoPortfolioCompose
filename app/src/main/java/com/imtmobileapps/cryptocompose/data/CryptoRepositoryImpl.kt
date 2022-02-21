@@ -8,7 +8,6 @@ import com.imtmobileapps.cryptocompose.model.TotalValues
 import com.imtmobileapps.cryptocompose.util.CoinSort
 import com.imtmobileapps.cryptocompose.util.Constants.CMC_LOGO_URL
 import com.imtmobileapps.cryptocompose.util.DataSource
-import com.imtmobileapps.cryptocompose.util.DataType
 import com.imtmobileapps.cryptocompose.util.RequestState
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
@@ -18,9 +17,8 @@ import javax.inject.Inject
 @ViewModelScoped
 class CryptoRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
-    private val localDataSource: LocalDataSource,
+    private val localDataSource: LocalDataSource
 ) : CryptoRepository {
-
 
     override fun getPersonCoins(
         personId: Int,
@@ -28,12 +26,9 @@ class CryptoRepositoryImpl @Inject constructor(
     ): Flow<RequestState<List<CryptoValue>>> {
         return flow {
 
-            // TODO add checkDurationCache logic,
-            //  if exceeded -> call remoteDataSource else -> call localDataSource
             when (dataSource) {
                 DataSource.REMOTE -> {
                     val personCoins = remoteDataSource.getPersonCoins(personId)
-                    // TODO, We should not have to do this transformation on the client, I will add to the server
                     personCoins.map {
                         val logo = CMC_LOGO_URL + it.coin.cmcId + ".png"
                         it.coin.smallCoinImageUrl = logo
@@ -137,8 +132,8 @@ class CryptoRepositoryImpl @Inject constructor(
     }
 
     override fun getCoin(coinName: String): Flow<CryptoValue> {
-        return flow{
-          val cryptoValue =   localDataSource.getCoin(coinName = coinName)
+        return flow {
+            val cryptoValue = localDataSource.getCoin(coinName = coinName)
             emit(cryptoValue)
         }
     }
