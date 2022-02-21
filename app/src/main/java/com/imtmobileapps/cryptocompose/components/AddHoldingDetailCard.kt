@@ -2,13 +2,18 @@ package com.imtmobileapps.cryptocompose.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,6 +26,7 @@ import com.imtmobileapps.cryptocompose.ui.theme.cardBorderColor
 import com.imtmobileapps.cryptocompose.ui.theme.coinNameTextColor
 import com.imtmobileapps.cryptocompose.util.getDummyCoin
 import com.imtmobileapps.cryptocompose.util.getDummyCryptoValue
+import logcat.logcat
 
 @Composable
 fun AddHoldingDetailCard(
@@ -29,8 +35,9 @@ fun AddHoldingDetailCard(
     selectedCoin: Coin?,
     selectedCryptoValue: CryptoValue?,
     onQuantityChanged: (String) -> Unit,
-    onCostChanged : (String) -> Unit,
-    addHoldingClicked: () -> Unit
+    onCostChanged: (String) -> Unit,
+    addHoldingClicked: () -> Unit,
+    onDone: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -43,7 +50,13 @@ fun AddHoldingDetailCard(
         shape = RoundedCornerShape(corner = CornerSize(6.dp))
     ) {
 
-        Column(modifier = Modifier.padding(10.dp))
+        val focusManager = LocalFocusManager.current
+        val TAG = "AddHoldingDetailCard"
+
+        Column(modifier =
+        Modifier
+            .padding(10.dp)
+            .verticalScroll(rememberScrollState()))
         {
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -157,9 +170,11 @@ fun AddHoldingDetailCard(
                 TextField(
                     value = quantityValueText,
                     label = { Text(text = stringResource(id = R.string.quantity)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus() }),
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next,
+                        keyboardType = KeyboardType.Number),
                     onValueChange = {
-                       onQuantityChanged(it)
+                        onQuantityChanged(it)
                     }
                 )
             }// end 6th row
@@ -168,10 +183,19 @@ fun AddHoldingDetailCard(
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
+
                 TextField(
                     value = costValueText,
                     label = { Text(text = stringResource(id = R.string.cost_per_coin)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    keyboardActions = KeyboardActions(onDone = {
+                        focusManager.clearFocus()
+                        // TODO add validation
+                        logcat(TAG){" quantity is $quantityValueText cost is : $costValueText"}
+                        onDone()
+                    }),
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Number),
+
                     onValueChange = {
                         onCostChanged(it)
                     }
@@ -183,6 +207,8 @@ fun AddHoldingDetailCard(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Button(onClick = {
+                    // TODO add validation
+                    logcat(TAG){" quantity is $quantityValueText cost is : $costValueText"}
                     addHoldingClicked()
                 }, modifier = Modifier.padding(8.dp)) {
                     Text(text = stringResource(id = R.string.add_holding))
@@ -210,7 +236,8 @@ fun AddHoldingDetailCardPreview() {
         selectedCryptoValue,
         onQuantityChanged = {},
         onCostChanged = {},
-        addHoldingClicked = {}
+        addHoldingClicked = {},
+        onDone = {}
     )
 
 }

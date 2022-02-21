@@ -15,6 +15,7 @@ import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarContentColor
+import com.imtmobileapps.cryptocompose.util.removeWhiteSpace
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 import kotlinx.coroutines.flow.collect
 import logcat.logcat
@@ -103,9 +104,17 @@ fun AddHoldingDetailScreen(
                 },
                 addHoldingClicked = {
                     // TODO call the service
-                    logcat(TAG) { "addHoldingClicked! and quantity is : ${quantityValueText.value}" }
-                    logcat(TAG) { "addHoldingClicked! and cost is : ${costValueText.value}" }
+                    val quantity = removeWhiteSpace(quantityValueText.value)
+                    val cost = removeWhiteSpace(costValueText.value)
+                    logcat(TAG) { "addHoldingClicked! and quantity is : $quantity" }
+                    logcat(TAG) { "addHoldingClicked! and cost is : $cost" }
+                },
+                onDone = {
+                    // TODO Need to call the service here also, if the used hits the done button instead
+                    logcat(TAG) { "onDoneClicked! and quantity is : ${quantityValueText.value}" }
+                    logcat(TAG) { "onDoneClicked! and cost is : ${costValueText.value}" }
                 }
+
 
             )
 

@@ -2,6 +2,7 @@ package com.imtmobileapps.cryptocompose.util
 
 import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.model.CryptoValue
+import com.imtmobileapps.cryptocompose.model.ReturnDTO
 import com.imtmobileapps.cryptocompose.model.TotalValues
 import java.math.BigDecimal
 
@@ -56,6 +57,28 @@ fun sortCryptoValueList(
         }
     }
 
+}
+// TODO check why we cannot test an extension function
+// This would be a good extension for String class
+fun removeWhiteSpace(str : String):String{
+    val returnString = ""
+    if (str.isNotEmpty()){
+        returnString.filter {
+            !it.isWhitespace()
+        }
+        return returnString
+    }else{
+        return str
+    }
+
+}
+
+fun validateAddHoldingValues(quantity: String, cost: String) : Boolean{
+
+    val isValid = false
+
+
+    return isValid
 }
 
 fun getDummyCryptoValue(): CryptoValue {
