@@ -7,5 +7,6 @@ object Routes {
     const val SPLASH = "splash"
     const val ADD_HOLDING_LIST = "add_holding_list"
     const val ADD_HOLDING_DETAIL = "add_holding_detail"
+    const val LOGIN_SCREEN = "login_screen"
 
 }

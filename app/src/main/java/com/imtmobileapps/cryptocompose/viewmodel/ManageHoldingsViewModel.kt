@@ -75,7 +75,6 @@ class ManageHoldingsViewModel @Inject constructor(
 
         when (event) {
             is ListEvent.OnAllCoinClicked -> {
-                //logcat(LogPriority.INFO) { "OnAllCoinClicked and coin is: ${event.coin}" }
                 _selectedCoin.value = event.coin
                 // get the associated CryptoValue, if it is null, it means the user does NOT have that coin yet
                 event.coin.coinName?.let { getSelectedCryptoValue(it) }

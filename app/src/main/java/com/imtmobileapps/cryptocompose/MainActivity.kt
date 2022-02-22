@@ -5,10 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,7 +19,9 @@ import com.imtmobileapps.cryptocompose.view.cryptolist.PersonCoinsDetailScreen
 import com.imtmobileapps.cryptocompose.view.cryptolist.PersonCoinsListScreen
 import com.imtmobileapps.cryptocompose.view.holding.AddHoldingDetailScreen
 import com.imtmobileapps.cryptocompose.view.holding.AddHoldingListScreen
+import com.imtmobileapps.cryptocompose.view.login.LoginScreen
 import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
+import com.imtmobileapps.cryptocompose.viewmodel.LoginViewModel
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,6 +33,7 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: CryptoListViewModel by viewModels()
     private val holdingsViewModel: ManageHoldingsViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,8 +44,17 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = Routes.PERSON_COINS_LIST
+                    startDestination = Routes.LOGIN_SCREEN
                 ) {
+
+                    composable(
+                        Routes.LOGIN_SCREEN
+                    ) {
+                        LoginScreen(viewModel = loginViewModel, onNavigate = {
+                            navController.navigate(Routes.PERSON_COINS_LIST)
+                        })
+                    }
+
                     composable(Routes.PERSON_COINS_LIST) {
                         PersonCoinsListScreen(
                             onNavigate = {
@@ -70,19 +81,19 @@ class MainActivity : ComponentActivity() {
 
                     composable(
                         Routes.ADD_HOLDING_LIST
-                    ){
+                    ) {
                         AddHoldingListScreen(onPopBackStack = {
                             navController.popBackStack()
-                        },viewModel = holdingsViewModel, onNavigate = {
+                        }, viewModel = holdingsViewModel, onNavigate = {
                             navController.navigate(Routes.ADD_HOLDING_DETAIL)
-                        }  )
+                        })
                     }
 
                     composable(
                         Routes.ADD_HOLDING_DETAIL
-                    ){
+                    ) {
                         AddHoldingDetailScreen(viewModel = holdingsViewModel, onPopBackStack = {
-                           navController.popBackStack()
+                            navController.popBackStack()
 
                         })
                     }

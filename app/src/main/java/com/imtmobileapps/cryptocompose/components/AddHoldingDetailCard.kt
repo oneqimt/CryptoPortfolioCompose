@@ -169,6 +169,7 @@ fun AddHoldingDetailCard(
                 horizontalArrangement = Arrangement.Center
             ) {
                 TextField(
+
                     value = quantityValueText,
                     label = { Text(text = stringResource(id = R.string.quantity)) },
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next,
@@ -179,7 +180,7 @@ fun AddHoldingDetailCard(
 
                     onValueChange = {
                         onQuantityChanged(it)
-                    }
+                    },
                 )
             }// end 6th row
 

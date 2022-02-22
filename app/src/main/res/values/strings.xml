@@ -22,5 +22,12 @@
     <string name="you_have">You currently have \%1$s in your holdings</string>
     <string name="quantity_held_add_holding">Quantity Held: \%1$s</string>
     <string name="holding_value_add_holding">Holding Value: \%1$s</string>
+    <string name="user_name">Username*</string>
+    <string name="password">Password*</string>
+    <string name="login">Login</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="do_not_have_account">Don\'t Have Account?</string>
+    <string name="sign_in">Sign In</string>
+    <string name="create_account">Create Account</string>
 
 </resources>
