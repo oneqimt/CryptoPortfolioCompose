@@ -58,27 +58,23 @@ fun sortCryptoValueList(
     }
 
 }
-// TODO check why we cannot test an extension function
+
+// TODO check why we cannot unit test an extension function
 // This would be a good extension for String class
-fun removeWhiteSpace(str : String):String{
-    val returnString = ""
-    if (str.isNotEmpty()){
-        returnString.filter {
+fun removeWhiteSpace(str: String): String {
+
+    if (str.isNotEmpty()) {
+        return str.filter {
             !it.isWhitespace()
         }
-        return returnString
-    }else{
-        return str
+    } else {
+        return ""
     }
 
 }
 
-fun validateAddHoldingValues(quantity: String, cost: String) : Boolean{
-
-    val isValid = false
-
-
-    return isValid
+fun validateAddHoldingValues(quantity: String, cost: String): Boolean {
+    return quantity.isNotEmpty() && cost.isNotEmpty()
 }
 
 fun getDummyCryptoValue(): CryptoValue {
