@@ -1,14 +1,22 @@
 package com.imtmobileapps.cryptocompose.data
 
-import com.imtmobileapps.cryptocompose.model.Coin
-import com.imtmobileapps.cryptocompose.model.CryptoValue
-import com.imtmobileapps.cryptocompose.model.TotalValues
+import com.imtmobileapps.cryptocompose.model.*
 import com.imtmobileapps.cryptocompose.util.CoinSort
 import com.imtmobileapps.cryptocompose.util.DataSource
 import com.imtmobileapps.cryptocompose.util.RequestState
 import kotlinx.coroutines.flow.Flow
 
 interface CryptoRepository {
+
+    fun login(uname: String, pass: String): Flow<SignUp>
+    suspend fun logout() : Boolean
+
+    fun resetPassword(email: String): Flow<ReturnDTO>
+    fun signUp(signUp: SignUp): Flow<SignUp>
+
+    fun addHolding(coinHolding: CoinHolding): Flow<Holdings>
+    fun deleteHolding(holdings: Holdings): Flow<Holdings>
+    fun updateHolding(coinHolding: CoinHolding): Flow<Holdings>
 
     fun getPersonCoins(personId : Int, dataSource: DataSource): Flow<RequestState<List<CryptoValue>>>
 

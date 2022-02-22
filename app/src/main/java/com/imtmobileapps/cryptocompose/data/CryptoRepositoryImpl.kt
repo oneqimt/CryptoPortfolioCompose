@@ -2,9 +2,7 @@ package com.imtmobileapps.cryptocompose.data
 
 import com.imtmobileapps.cryptocompose.data.local.LocalDataSource
 import com.imtmobileapps.cryptocompose.data.remote.RemoteDataSource
-import com.imtmobileapps.cryptocompose.model.Coin
-import com.imtmobileapps.cryptocompose.model.CryptoValue
-import com.imtmobileapps.cryptocompose.model.TotalValues
+import com.imtmobileapps.cryptocompose.model.*
 import com.imtmobileapps.cryptocompose.util.CoinSort
 import com.imtmobileapps.cryptocompose.util.Constants.CMC_LOGO_URL
 import com.imtmobileapps.cryptocompose.util.DataSource
@@ -19,6 +17,34 @@ class CryptoRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource
 ) : CryptoRepository {
+
+    override fun login(uname: String, pass: String): Flow<SignUp> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun logout(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun resetPassword(email: String): Flow<ReturnDTO> {
+        TODO("Not yet implemented")
+    }
+
+    override fun signUp(signUp: SignUp): Flow<SignUp> {
+        TODO("Not yet implemented")
+    }
+
+    override fun addHolding(coinHolding: CoinHolding): Flow<Holdings> {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteHolding(holdings: Holdings): Flow<Holdings> {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateHolding(coinHolding: CoinHolding): Flow<Holdings> {
+        TODO("Not yet implemented")
+    }
 
     override fun getPersonCoins(
         personId: Int,
