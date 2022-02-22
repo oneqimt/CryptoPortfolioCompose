@@ -77,11 +77,19 @@ class UIHelperKtTest : TestCase() {
         val str = "23   4  4 4"
         val newstr = removeWhiteSpace(str)
 
-        assertThat(newstr).doesNotContain("        ")
+        assertThat(newstr).doesNotContain("         ")
+        assertThat(newstr).isEqualTo("23444")
 
     }
 
     fun testValidateAddHoldingValues() {
+
+        val quantity = "2"
+        val cost = "12900.78"
+
+        val valid = validateAddHoldingValues(quantity, cost)
+
+        assertThat(valid).isTrue()
 
     }
 }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -170,9 +171,12 @@ fun AddHoldingDetailCard(
                 TextField(
                     value = quantityValueText,
                     label = { Text(text = stringResource(id = R.string.quantity)) },
-                    keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus() }),
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Number),
+                    keyboardActions = KeyboardActions(onNext = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    }),
+
                     onValueChange = {
                         onQuantityChanged(it)
                     }
@@ -187,14 +191,14 @@ fun AddHoldingDetailCard(
                 TextField(
                     value = costValueText,
                     label = { Text(text = stringResource(id = R.string.cost_per_coin)) },
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(onDone = {
                         focusManager.clearFocus()
                         // TODO add validation
                         logcat(TAG){" quantity is $quantityValueText cost is : $costValueText"}
                         onDone()
                     }),
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done,
-                        keyboardType = KeyboardType.Number),
 
                     onValueChange = {
                         onCostChanged(it)
