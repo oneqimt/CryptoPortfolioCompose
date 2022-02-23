@@ -8,6 +8,7 @@ import com.imtmobileapps.cryptocompose.data.CryptoRepositoryImpl
 import com.imtmobileapps.cryptocompose.event.ListEvent
 import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.model.CryptoValue
+import com.imtmobileapps.cryptocompose.model.Person
 import com.imtmobileapps.cryptocompose.model.TotalValues
 import com.imtmobileapps.cryptocompose.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import logcat.logcat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,35 +51,18 @@ class CryptoListViewModel @Inject constructor(
         MutableStateFlow<RequestState<CoinSort>>(RequestState.Idle)
     val sortState: StateFlow<RequestState<CoinSort>> = _sortState
 
-    // PERSON ID
-
     // UPDATE TIME
-
     // CACHE DURATION
-
-    // NOTE : personId will come from login layer when it is built
-    // And these calls probably will be made from LoginViewModel
     init {
 
-        fetchCoinsFromRemote(1)
-        fetchTotalValuesFromRemote(1)
+        fetchCoinsFromRemote(getPersonId())
+        fetchTotalValuesFromRemote(getPersonId())
+        getPerson(getPersonId())
         //fetchCoinsFromDatabase(1)
         //fetchTotalValuesFromDatabase()
     }
 
-    fun savePersonId(personId: Int) {
-        try {
-            viewModelScope.launch {
-                repository.savePersonId(personId)
-                println("$TAG SAVING personId $personId")
-            }
-        } catch (e: Exception) {
-            println("$TAG SAVING person ERROR ${e.localizedMessage}")
-        }
-
-    }
-
-    fun getPersonId(): Int {
+    private fun getPersonId(): Int {
 
         var personId: Int = -1
 
@@ -86,8 +71,18 @@ class CryptoListViewModel @Inject constructor(
                 personId = it
                 println("$TAG GETTING personId $it")
             }
+
         }
         return personId
+    }
+    // TODO this will go in Settings -> Account path, so that the user may see their account
+    private fun getPerson(personId: Int): Person? {
+        var person: Person? = null
+        viewModelScope.launch {
+            person = repository.getPerson(personId)
+            logcat(TAG){"PERSON is in DB $person"}
+        }
+        return person
     }
 
     fun onEvent(event: UIEvent) {
@@ -180,7 +175,7 @@ class CryptoListViewModel @Inject constructor(
 
                 val totalsToStore = (totalValues.value as RequestState.Success<*>).data
 
-                println("$TAG TotalValues that will be stored in DB $totalsToStore")
+                println("$TAG TotalValues that are stored in DB $totalsToStore")
                 storeTotalValuesInDatabase(totalsToStore as TotalValues)
             }
 
@@ -264,7 +259,6 @@ class CryptoListViewModel @Inject constructor(
         } catch (e: Exception) {
             _searchedCoins.value = RequestState.Error(e.localizedMessage as String)
         }
-        //searchAppBarState.value = SearchAppBarState.TRIGGERED
     }
 
 

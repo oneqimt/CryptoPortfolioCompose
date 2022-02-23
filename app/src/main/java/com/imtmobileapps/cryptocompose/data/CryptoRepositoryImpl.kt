@@ -18,15 +18,27 @@ class CryptoRepositoryImpl @Inject constructor(
     private val localDataSource: LocalDataSource
 ) : CryptoRepository {
 
-    override suspend fun login(uname: String, pass: String): Flow<RequestState<SignUp>> {
+    override suspend fun login(uname: String, pass: String): Flow<SignUp> {
         return flow {
             val signUp = remoteDataSource.login(uname, pass)
-            emit(RequestState.Success(signUp))
+            emit(signUp)
         }
     }
 
     override suspend fun logout(): Boolean {
-        TODO("Not yet implemented")
+        return remoteDataSource.logout()
+    }
+
+    override suspend fun savePerson(person: Person): Long {
+        return localDataSource.savePerson(person)
+    }
+
+    override suspend fun getPerson(personId: Int): Person {
+        return localDataSource.getPerson(personId)
+    }
+
+    override suspend fun deletePerson() {
+        localDataSource.deletePerson()
     }
 
     override fun resetPassword(email: String): Flow<ReturnDTO> {
@@ -67,7 +79,7 @@ class CryptoRepositoryImpl @Inject constructor(
                 }
                 DataSource.LOCAL -> {
                     val personCoinsFromDatabase =
-                        localDataSource.getPersonCoins(personId, dataSource)
+                        localDataSource.getPersonCoins()
 
                     emit(RequestState.Success(personCoinsFromDatabase))
                 }

@@ -1,6 +1,8 @@
 package com.imtmobileapps.cryptocompose.data.local
 
 import com.imtmobileapps.cryptocompose.model.CryptoValue
+import com.imtmobileapps.cryptocompose.model.Person
+import com.imtmobileapps.cryptocompose.model.SignUp
 import com.imtmobileapps.cryptocompose.model.TotalValues
 import com.imtmobileapps.cryptocompose.util.CoinSort
 import com.imtmobileapps.cryptocompose.util.DataSource
@@ -31,12 +33,24 @@ class LocalDataSource @Inject constructor(
         cryptoValuesDao.deleteAllCoins()
     }
 
-    suspend fun getPersonCoins(personId: Int, dataSource: DataSource) : List<CryptoValue>{
+    suspend fun getPersonCoins() : List<CryptoValue>{
         return cryptoValuesDao.getPersonCoins()
     }
 
     suspend fun savePersonId(personId : Int){
         dataStore.savePersonId(personId)
+    }
+
+    suspend fun savePerson(person: Person): Long{
+        return personDao.insertPerson(person)
+    }
+
+    suspend fun getPerson(personId: Int): Person{
+        return personDao.getPerson(personId)
+    }
+
+    suspend fun deletePerson(){
+        personDao.deletePerson()
     }
 
     fun getPersonId() : Flow<Int> {

@@ -24,7 +24,7 @@ data class Person(
     @ColumnInfo(name = "last_name")
     val lastName: String?,
 
-    var email: String?,
+    val email: String?,
 
     val phone: String?,
 

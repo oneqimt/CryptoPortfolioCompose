@@ -8,8 +8,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface CryptoRepository {
 
-    suspend fun login(uname: String, pass: String): Flow<RequestState<SignUp>>
+    suspend fun login(uname: String, pass: String): Flow<SignUp>
     suspend fun logout() : Boolean
+
+    suspend fun savePerson(person: Person): Long
+    suspend fun getPerson(personId: Int):Person
+    suspend fun deletePerson()
 
     fun resetPassword(email: String): Flow<ReturnDTO>
     fun signUp(signUp: SignUp): Flow<SignUp>

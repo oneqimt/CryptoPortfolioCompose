@@ -39,7 +39,6 @@ fun LoginScreen(
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is UIEvent.Navigate -> {
-                    logcat(TAG){"TIME TO GO TO PERSON LIST"}
                     onNavigate()
                 }
 
