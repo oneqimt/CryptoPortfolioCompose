@@ -5,6 +5,7 @@ import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.ReturnDTO
 import com.imtmobileapps.cryptocompose.model.TotalValues
 import java.math.BigDecimal
+import kotlin.math.cos
 
 enum class DataSource {
     LOCAL,
@@ -73,8 +74,25 @@ fun removeWhiteSpace(str: String): String {
 
 }
 
+fun validateUsername(uname: String):Boolean{
+
+    return uname.isNotEmpty()
+}
+
+fun validatePassword(pass: String):Boolean{
+    return pass.isNotEmpty()
+}
+
+fun validateLoginValues(uname: String, pass: String): Boolean{
+    val unameClean = removeWhiteSpace(uname)
+    val passClean = removeWhiteSpace(pass)
+    return unameClean.isNotEmpty() && passClean.isNotEmpty()
+}
+
 fun validateAddHoldingValues(quantity: String, cost: String): Boolean {
-    return quantity.isNotEmpty() && cost.isNotEmpty()
+    val quantityClean = removeWhiteSpace(quantity)
+    val costClean = removeWhiteSpace(cost)
+    return quantityClean.isNotEmpty() && costClean.isNotEmpty()
 }
 
 fun getDummyCryptoValue(): CryptoValue {

@@ -14,6 +14,7 @@ import com.imtmobileapps.cryptocompose.components.LoginCard
 import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarContentColor
+import com.imtmobileapps.cryptocompose.util.validateAddHoldingValues
 import com.imtmobileapps.cryptocompose.viewmodel.LoginViewModel
 import kotlinx.coroutines.flow.collect
 import logcat.logcat
@@ -38,6 +39,7 @@ fun LoginScreen(
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is UIEvent.Navigate -> {
+                    logcat(TAG){"TIME TO GO TO PERSON LIST"}
                     onNavigate()
                 }
 
@@ -78,7 +80,8 @@ fun LoginScreen(
                 onSignInClicked = {
                     logcat(TAG) { "onSignInClicked! and username is : ${usernameText.value}" }
                     logcat(TAG) { "onSignInClicked! and password is : ${passwordText.value}" }
-                    onNavigate()
+                    viewModel.login(usernameText.value, passwordText.value)
+
                 },
                 onForgotPasswordClicked = {
                     logcat(TAG) { "onForgotPasswordClicked!" }

@@ -29,6 +29,9 @@ import androidx.compose.ui.unit.dp
 import com.imtmobileapps.cryptocompose.R
 import com.imtmobileapps.cryptocompose.ui.theme.cardBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.cardBorderColor
+import com.imtmobileapps.cryptocompose.util.removeWhiteSpace
+import com.imtmobileapps.cryptocompose.util.validatePassword
+import com.imtmobileapps.cryptocompose.util.validateUsername
 import logcat.logcat
 
 @Composable
@@ -68,25 +71,33 @@ fun LoginCard(
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
+                // USERNAME
                 TextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = usernameText,
+
                     label = { Text(text = stringResource(id = R.string.user_name)) },
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Text),
                     keyboardActions = KeyboardActions(onNext = {
-                        focusManager.moveFocus(FocusDirection.Down)
+
+                        if (validateUsername(usernameText)){
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
+
                     }),
 
                     onValueChange = {
                         onUsernameChanged(it)
                     },
+                    isError = !validateUsername(usernameText)
                 )
             }// end 1st row
             Spacer(modifier = Modifier.height(20.dp))
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center)
             {
+                // PASSWORD
                 TextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = passwordText,
@@ -98,10 +109,13 @@ fun LoginCard(
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done,
                         keyboardType = KeyboardType.Password),
                     keyboardActions = KeyboardActions(onDone = {
-                        focusManager.clearFocus()
-                        // TODO add validation
-                        logcat(TAG) { " username is $usernameText password is : $passwordText" }
-                        onDone()
+
+                        if (validatePassword(passwordText)){
+                            logcat(TAG) { " username is $usernameText password is : $passwordText" }
+                            focusManager.clearFocus()
+                            onDone()
+                        }
+
                     }),
                     visualTransformation =
                     if (passwordVisibility.value) VisualTransformation.None
@@ -117,13 +131,14 @@ fun LoginCard(
                         }) {
                             Icon(imageVector = image, null)
                         }
-                    }
+                    },
+                    isError = !validatePassword(passwordText)
 
                 )
             }// end 2nd row
 
             Spacer(modifier = Modifier.height(10.dp))
-
+            // FORGOT PASSWORD
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center)
             {
@@ -134,6 +149,7 @@ fun LoginCard(
                 }
             }// end 3rd row
 
+            // SIGN IN BUTTON
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center)
             {
@@ -157,6 +173,7 @@ fun LoginCard(
 
             }// end 5th row
 
+            // CREATE ACCOUNT
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center)
             {
@@ -170,8 +187,6 @@ fun LoginCard(
                 }
 
             }// end 6th row
-
-
 
         }
 

@@ -2,6 +2,7 @@ package com.imtmobileapps.cryptocompose.data.remote
 
 import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.model.CryptoValue
+import com.imtmobileapps.cryptocompose.model.SignUp
 import com.imtmobileapps.cryptocompose.model.TotalValues
 import javax.inject.Inject
 
@@ -19,6 +20,10 @@ class RemoteDataSource @Inject constructor(
 
     suspend fun getAllCoins(): MutableList<Coin>{
         return cryptoApi.getAllCoins()
+    }
+
+    suspend fun login(uname: String, pass: String): SignUp{
+        return cryptoApi.login(uname = uname, pass = pass)
     }
 
 

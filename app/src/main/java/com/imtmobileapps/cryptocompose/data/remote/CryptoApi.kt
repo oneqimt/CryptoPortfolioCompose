@@ -25,7 +25,7 @@ interface CryptoApi {
 
     @FormUrlEncoded
     @POST("login")
-    fun login(
+    suspend fun login(
         @Field("uname") uname: String?,
         @Field("pass") pass: String?
     ): SignUp
