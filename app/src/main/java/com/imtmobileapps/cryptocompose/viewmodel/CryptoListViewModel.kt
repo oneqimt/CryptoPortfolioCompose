@@ -120,7 +120,7 @@ class CryptoListViewModel @Inject constructor(
                     person.personuuid = result.toInt()
 
                 }else{
-                    logcat(TAG){"That person already exists!"}
+                    logcat(TAG){"${cachedPerson.firstName}  ${cachedPerson.lastName} already exists!"}
                 }
             }
         }catch (e: Exception){

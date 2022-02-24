@@ -1,5 +1,6 @@
 package com.imtmobileapps.cryptocompose.components
 
+import android.widget.Toast
 import androidx.compose.animation.core.keyframes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
@@ -14,10 +15,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -43,7 +47,7 @@ fun LoginCard(
     onDone: () -> Unit,
     onSignInClicked: () -> Unit,
     onForgotPasswordClicked: () -> Unit,
-    onCreateAccountClicked: () -> Unit
+    onCreateAccountClicked: () -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -58,8 +62,12 @@ fun LoginCard(
 
         val focusManager = LocalFocusManager.current
         val TAG = "LoginScreen"
+        val context = LocalContext.current
 
         val passwordVisibility = remember { mutableStateOf(false) }
+
+        val isUsernameError = rememberSaveable { mutableStateOf(false) }
+        val isPasswordError = rememberSaveable { mutableStateOf(false) }
 
         Column(
             modifier =
@@ -80,17 +88,23 @@ fun LoginCard(
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Text),
                     keyboardActions = KeyboardActions(onNext = {
+                        if (!validateUsername(usernameText)) {
+                            isUsernameError.value = true
 
-                        if (validateUsername(usernameText)){
+                        } else {
                             focusManager.moveFocus(FocusDirection.Down)
+                            isUsernameError.value = false
                         }
 
                     }),
 
                     onValueChange = {
                         onUsernameChanged(it)
+                        isUsernameError.value = it.length <= 1
+
                     },
-                    isError = !validateUsername(usernameText)
+
+                    isError = isUsernameError.value
                 )
             }// end 1st row
             Spacer(modifier = Modifier.height(20.dp))
@@ -109,10 +123,12 @@ fun LoginCard(
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done,
                         keyboardType = KeyboardType.Password),
                     keyboardActions = KeyboardActions(onDone = {
+                        if (!validatePassword(passwordText)) {
+                            isPasswordError.value = true
 
-                        if (validatePassword(passwordText)){
-                            logcat(TAG) { " username is $usernameText password is : $passwordText" }
+                        }else{
                             focusManager.clearFocus()
+                            isPasswordError.value = false
                             onDone()
                         }
 
@@ -132,7 +148,7 @@ fun LoginCard(
                             Icon(imageVector = image, null)
                         }
                     },
-                    isError = !validatePassword(passwordText)
+                    isError = isPasswordError.value
 
                 )
             }// end 2nd row
@@ -142,7 +158,7 @@ fun LoginCard(
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center)
             {
-                TextButton(onClick = { 
+                TextButton(onClick = {
                     onForgotPasswordClicked()
                 }, enabled = true) {
                     Text(text = stringResource(id = R.string.forgot_password))
@@ -156,7 +172,18 @@ fun LoginCard(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                       onSignInClicked()
+                        if (!isUsernameError.value && !isPasswordError.value){
+                            onSignInClicked()
+                        }else {
+                            logcat(TAG) { "SHOW error here!" }
+                            focusManager.clearFocus()
+                            Toast.makeText(
+                                context,
+                                "Please check you fields before submitting",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+
                     })
                 {
                     Text(text = stringResource(id = R.string.sign_in))
@@ -180,7 +207,7 @@ fun LoginCard(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                       onCreateAccountClicked()
+                        onCreateAccountClicked()
                     })
                 {
                     Text(text = stringResource(id = R.string.create_account))
