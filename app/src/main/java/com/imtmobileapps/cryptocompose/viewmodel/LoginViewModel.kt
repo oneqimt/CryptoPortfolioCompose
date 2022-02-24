@@ -24,21 +24,6 @@ class LoginViewModel @Inject constructor(
     private val repository: CryptoRepositoryImpl,
 ) : ViewModel() {
 
-    private val _uiEvent = Channel<UIEvent>()
-    val uiEvent = _uiEvent.receiveAsFlow()
 
-
-
-
-
-    private fun sendUiEvent(event: UIEvent) {
-        viewModelScope.launch {
-            _uiEvent.send(event)
-        }
-    }
-
-    companion object {
-        private val TAG = LoginViewModel::class.java.simpleName
-    }
 
 }
