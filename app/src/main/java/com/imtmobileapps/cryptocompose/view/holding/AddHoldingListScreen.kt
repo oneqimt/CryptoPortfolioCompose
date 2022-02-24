@@ -15,12 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.imtmobileapps.cryptocompose.components.CircularProgressBar
+import com.imtmobileapps.cryptocompose.components.appbar.SearchViewActionBar
 import com.imtmobileapps.cryptocompose.event.ListEvent
 import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.util.DataType
 import com.imtmobileapps.cryptocompose.util.RequestState
-import com.imtmobileapps.cryptocompose.view.appbar.SearchViewActionBar
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 import kotlinx.coroutines.flow.collect
 
@@ -32,8 +32,6 @@ fun AddHoldingListScreen(
     onPopBackStack: () -> Unit,
     viewModel: ManageHoldingsViewModel
 ) {
-
-    val TAG = "AddHoldingListScreen"
 
     val allCoins: State<RequestState<MutableList<Coin>>> =
         viewModel.allCoins.collectAsState()

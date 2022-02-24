@@ -1,6 +1,7 @@
 package com.imtmobileapps.cryptocompose.viewmodel
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import logcat.LogPriority
 import logcat.logcat
 import javax.inject.Inject
 
@@ -23,6 +25,9 @@ import javax.inject.Inject
 class CryptoListViewModel @Inject constructor(
     private val repository: CryptoRepositoryImpl,
 ) : ViewModel() {
+
+    private val _personId: MutableState<Int> = mutableStateOf(0)
+    val personId: State<Int> = _personId
 
     // Backing property to avoid state updates from other classes
     // https://developer.android.com/kotlin/flow/stateflow-and-sharedflow
@@ -54,55 +59,106 @@ class CryptoListViewModel @Inject constructor(
     // UPDATE TIME
     // CACHE DURATION
     init {
-
-        fetchCoinsFromRemote(getPersonId())
-        fetchTotalValuesFromRemote(getPersonId())
-        getPerson(getPersonId())
-        //fetchCoinsFromDatabase(1)
-        //fetchTotalValuesFromDatabase()
+        logcat(TAG){"INIT() called"}
     }
 
-    private fun getPersonId(): Int {
+    fun login(uname: String, pass: String) {
+        try {
+            viewModelScope.launch {
+                repository.login(uname, pass).collect { signUp ->
+                    // save the Person object to the database
+                    signUp.person.let { person ->
+                        // save the personId Int to the dataStore
+                        person.personId?.let {
+                            repository.savePersonId(it)
+                            _personId.value = it
+                        }
+                        savePerson(person)
+                    }
 
-        var personId: Int = -1
+                    fetchCoinsFromRemote(_personId.value)
+                    fetchTotalValuesFromRemote(_personId.value)
 
-        viewModelScope.launch {
-            repository.getCurrentPersonId().collect {
-                personId = it
-                println("$TAG GETTING personId $it")
+                    sendUiEvent(UIEvent.Navigate(Routes.PERSON_COINS_LIST))
+
+                }
             }
-
+        } catch (e: Exception) {
+            logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
         }
-        return personId
-    }
-    // TODO this will go in Settings -> Account path, so that the user may see their account
-    private fun getPerson(personId: Int): Person? {
-        var person: Person? = null
-        viewModelScope.launch {
-            person = repository.getPerson(personId)
-            logcat(TAG){"PERSON is in DB $person"}
-        }
-        return person
     }
 
+    fun logout() {
+        try {
+            viewModelScope.launch {
+                val loggedOut = repository.logout()
+                logcat(TAG) { "LOGOUT and loggedOut is : $loggedOut" }
+                // clear all existing values
+               _personCoins.value = RequestState.Success(mutableListOf())
+               _totalValues.value = RequestState.Success(getDummyTotalsValue())
+               _searchedCoins.value = RequestState.Success(mutableListOf())
+
+                clearDatabase()
+                clearPersonId()
+                sendUiEvent(UIEvent.Logout)
+
+            }
+        } catch (e: Exception) {
+            logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
+        }
+    }
+
+    private fun savePerson(person: Person){
+        try{
+            viewModelScope.launch {
+                val cachedPerson = person.personId?.let { repository.getPerson(it) }
+                if (cachedPerson == null) {
+                    // clear person first
+                    repository.deletePerson()
+                    // then save
+                    val result: Long = repository.savePerson(person)
+                    person.personuuid = result.toInt()
+
+                }else{
+                    logcat(TAG){"That person already exists!"}
+                }
+            }
+        }catch (e: Exception){
+            logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
+        }
+    }
+
+    private fun clearPersonId() {
+        try {
+            viewModelScope.launch {
+                repository.savePersonId(0)
+            }
+        } catch (e: Exception) {
+            logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
+        }
+    }
+
+    private fun clearDatabase() {
+        try {
+            viewModelScope.launch {
+                repository.deleteAllCoins()
+                repository.deletePerson()
+            }
+        } catch (e: Exception) {
+            logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
+        }
+    }
     fun onEvent(event: UIEvent) {
         when (event) {
-
-            is ListEvent.OnListRefresh -> {
-                println("$TAG ListEvent.OnListRefresh")
-               // fetchCoinsFromRemote(1)
-            }
-
             is ListEvent.OnCoinClicked -> {
 
                 _selectedCryptoValue.value = event.cryptoValue
                 val route = Routes.PERSON_COINS_DETAIL + "?cmcId=${event.cryptoValue.coin.cmcId}"
                 println("$TAG ListEvent.OnCoinClicked NAVIGATE to this route:  $route")
                 sendUiEvent(UIEvent.Navigate(route))
-
             }
 
-            is ListEvent.OnAddCoinClicked ->{
+            is ListEvent.OnAddCoinClicked -> {
                 val route = Routes.ADD_HOLDING_LIST
                 println("$TAG ListEvent.OnAddCoinClicked NAVIGATE to this route:  $route")
                 sendUiEvent(UIEvent.Navigate(route))
@@ -142,7 +198,7 @@ class CryptoListViewModel @Inject constructor(
 
     }
 
-    private fun fetchCoinsFromDatabase(personId: Int) {
+    fun fetchCoinsFromDatabase(personId: Int) {
         try {
             viewModelScope.launch {
                 repository.getPersonCoins(personId, DataSource.LOCAL).collect {

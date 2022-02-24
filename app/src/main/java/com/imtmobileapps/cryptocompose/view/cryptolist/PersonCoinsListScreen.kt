@@ -1,6 +1,9 @@
 package com.imtmobileapps.cryptocompose.view.cryptolist
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -12,16 +15,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.imtmobileapps.cryptocompose.components.CircularProgressBar
+import com.imtmobileapps.cryptocompose.components.appbar.PersonCoinsListAppBar
 import com.imtmobileapps.cryptocompose.event.ListEvent
 import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.ui.theme.fabBackgroundColor
 import com.imtmobileapps.cryptocompose.util.RequestState
-import com.imtmobileapps.cryptocompose.util.SearchAppBarState
+import com.imtmobileapps.cryptocompose.util.Routes
 import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import logcat.logcat
 
 @ExperimentalMaterialApi
 @Composable
@@ -53,10 +57,15 @@ fun PersonCoinsListScreen(
                     println("$TAG and UIEvent.Navigate called and route is ${event.route}")
                     onNavigate(event)
                 }
+                is UIEvent.Logout ->{
+                    logcat(TAG){"UIEvent.Logout called"}
+                    onNavigate(UIEvent.Navigate(Routes.LOGIN_SCREEN))
+                }
 
                 else -> Unit
             }
         }
+
     }
 
     Scaffold(

@@ -21,7 +21,6 @@ import com.imtmobileapps.cryptocompose.view.holding.AddHoldingDetailScreen
 import com.imtmobileapps.cryptocompose.view.holding.AddHoldingListScreen
 import com.imtmobileapps.cryptocompose.view.login.LoginScreen
 import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
-import com.imtmobileapps.cryptocompose.viewmodel.LoginViewModel
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,7 +32,6 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: CryptoListViewModel by viewModels()
     private val holdingsViewModel: ManageHoldingsViewModel by viewModels()
-    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +48,7 @@ class MainActivity : ComponentActivity() {
                     composable(
                         Routes.LOGIN_SCREEN
                     ) {
-                        LoginScreen(viewModel = loginViewModel, onNavigate = {
+                        LoginScreen(viewModel = viewModel, onNavigate = {
                             navController.navigate(Routes.PERSON_COINS_LIST)
                         })
                     }

@@ -26,7 +26,7 @@ class RemoteDataSource @Inject constructor(
         return cryptoApi.login(uname = uname, pass = pass)
     }
 
-    fun logout():Boolean{
+    suspend fun logout():Boolean{
         return cryptoApi.logout()
     }
 

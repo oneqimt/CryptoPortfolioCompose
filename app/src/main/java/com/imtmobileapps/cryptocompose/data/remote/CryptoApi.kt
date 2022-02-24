@@ -37,7 +37,7 @@ interface CryptoApi {
     ): ReturnDTO
 
     @POST("logout")
-    fun logout() : Boolean
+    suspend fun logout() : Boolean
 
     @POST("signup")
     fun signUp(@Body signUp: SignUp): SignUp

@@ -14,14 +14,13 @@ import com.imtmobileapps.cryptocompose.components.LoginCard
 import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarContentColor
-import com.imtmobileapps.cryptocompose.util.validateAddHoldingValues
-import com.imtmobileapps.cryptocompose.viewmodel.LoginViewModel
+import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
 import kotlinx.coroutines.flow.collect
 import logcat.logcat
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel,
+    viewModel: CryptoListViewModel,
     onNavigate: () -> Unit
 ) {
 
@@ -39,6 +38,7 @@ fun LoginScreen(
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is UIEvent.Navigate -> {
+                    logcat(TAG){"UIEvent.Navigate called in LoginScreen and route is ${event.route}"}
                     onNavigate()
                 }
 
@@ -46,7 +46,6 @@ fun LoginScreen(
             }
         }
     }
-
 
     Scaffold(
         topBar = {

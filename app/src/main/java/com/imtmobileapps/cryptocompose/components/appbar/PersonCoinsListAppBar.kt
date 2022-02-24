@@ -1,4 +1,4 @@
-package com.imtmobileapps.cryptocompose.view.cryptolist
+package com.imtmobileapps.cryptocompose.components.appbar
 
 import LARGE_PADDING
 import androidx.compose.foundation.layout.padding
@@ -13,14 +13,16 @@ import com.imtmobileapps.cryptocompose.components.SortItem
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarContentColor
 import com.imtmobileapps.cryptocompose.util.CoinSort
-import com.imtmobileapps.cryptocompose.view.appbar.SearchAppBar
 import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
+import logcat.logcat
 
 
 @Composable
 fun PersonCoinsListAppBar(
-    viewModel: CryptoListViewModel
+    viewModel: CryptoListViewModel,
 ) {
+
+    val TAG = "PersonCoinsListAppBar"
 
     DefaultListAppBar(
         onSortClicked = {
@@ -32,7 +34,17 @@ fun PersonCoinsListAppBar(
         },
         onDeleteAllConfirmed = {
             //viewModel.action.value = Action.DELETE_ALL
+            logcat(TAG) { "onDeleteAllConfirmed clicked" }
+        },
+        onLogoutClicked = {
+            logcat(TAG) { "onLogout clicked" }
+            viewModel.logout()
+
+        },
+        onSettingsClicked = {
+            logcat(TAG) { "onSettings clicked" }
         }
+
     )
 
 }
@@ -41,6 +53,8 @@ fun PersonCoinsListAppBar(
 fun DefaultListAppBar(
     onSortClicked: (CoinSort) -> Unit,
     onDeleteAllConfirmed: () -> Unit,
+    onLogoutClicked: () -> Unit,
+    onSettingsClicked: () -> Unit,
 ) {
     TopAppBar(
         title = {
@@ -52,7 +66,9 @@ fun DefaultListAppBar(
         actions = {
             ListAppBarActions(
                 onSortClicked = onSortClicked,
-                onDeleteAllConfirmed = onDeleteAllConfirmed
+                onDeleteAllConfirmed = onDeleteAllConfirmed,
+                onLogoutClicked = onLogoutClicked,
+                onSettingsClicked = onSettingsClicked
             )
         },
         backgroundColor = MaterialTheme.colors.topAppBarBackgroundColor
@@ -65,13 +81,25 @@ fun DefaultListAppBar(
 fun ListAppBarActions(
     onSortClicked: (CoinSort) -> Unit,
     onDeleteAllConfirmed: () -> Unit,
+    onLogoutClicked: () -> Unit,
+    onSettingsClicked: () -> Unit,
 ) {
-    var openDialog by remember {
+    /*var openDialog by remember {
         mutableStateOf(false)
-    }
+    }*/
 
     SortAction(onSortClicked = onSortClicked)
-    DeleteAllAction(onDeleteAllConfirmed = { openDialog = true })
+    VerticalMenuAction(
+        onDeleteAllConfirmed = {
+            onDeleteAllConfirmed()
+        },
+        onSettingsClicked = {
+            onSettingsClicked()
+        },
+        onLogoutClicked = {
+            onLogoutClicked()
+        }
+    )
 
 }
 
@@ -127,9 +155,12 @@ fun SortAction(
 
 }
 
+
 @Composable
-fun DeleteAllAction(
+fun VerticalMenuAction(
     onDeleteAllConfirmed: () -> Unit,
+    onLogoutClicked: () -> Unit,
+    onSettingsClicked: () -> Unit,
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -139,7 +170,7 @@ fun DeleteAllAction(
     }) {
         Icon(
             painter = painterResource(id = R.drawable.ic_vertical_menu),
-            contentDescription = stringResource(id = R.string.delete_all_action),
+            contentDescription = "vertical menu",
             tint = MaterialTheme.colors.topAppBarContentColor
         )
 
@@ -161,6 +192,29 @@ fun DeleteAllAction(
                     style = MaterialTheme.typography.subtitle2
                 )
             }
+
+            DropdownMenuItem(onClick = {
+                expanded = false
+                onSettingsClicked()
+            }) {
+                Text(
+                    modifier = Modifier.padding(start = LARGE_PADDING),
+                    text = stringResource(R.string.settings),
+                    style = MaterialTheme.typography.subtitle2
+                )
+            }
+
+            DropdownMenuItem(onClick = {
+                expanded = false
+                onLogoutClicked()
+
+            }) {
+                Text(
+                    modifier = Modifier.padding(start = LARGE_PADDING),
+                    text = stringResource(R.string.logout),
+                    style = MaterialTheme.typography.subtitle2
+                )
+            }
         }
     }
 }
@@ -170,6 +224,8 @@ fun DeleteAllAction(
 private fun DefaultListAppBarPreview() {
     DefaultListAppBar(
         onSortClicked = {},
-        onDeleteAllConfirmed = {}
+        onDeleteAllConfirmed = {},
+        onLogoutClicked = {},
+        onSettingsClicked = {}
     )
 }

@@ -1,4 +1,4 @@
-package com.imtmobileapps.cryptocompose.view.appbar
+package com.imtmobileapps.cryptocompose.components.appbar
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
