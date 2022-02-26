@@ -1,9 +1,6 @@
 package com.imtmobileapps.cryptocompose.view.login
 
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +31,9 @@ fun LoginScreen(
         mutableStateOf("")
     }
 
+    val scaffoldState =
+        rememberScaffoldState() // This is here in case we want to display a snackbar
+
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
             when (event) {
@@ -42,12 +42,19 @@ fun LoginScreen(
                     onNavigate()
                 }
 
+                is UIEvent.ShowSnackbar -> {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = event.message,
+                        actionLabel = event.action
+                    )
+                }
+
                 else -> Unit
             }
         }
     }
 
-    Scaffold(
+    Scaffold(scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
 
@@ -72,6 +79,8 @@ fun LoginScreen(
                     passwordText.value = it
                 },
                 onDone = {
+                    // TODO call login here as well
+                    // viewModel.login(usernameText.value, passwordText.value)
                     logcat(TAG) { "onDoneClicked! and username is : ${usernameText.value}" }
                     logcat(TAG) { "onDoneClicked! and password is : ${passwordText.value}" }
                 },

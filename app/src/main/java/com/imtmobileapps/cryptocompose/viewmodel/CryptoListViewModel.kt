@@ -15,10 +15,12 @@ import com.imtmobileapps.cryptocompose.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import logcat.LogPriority
 import logcat.logcat
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -59,95 +61,9 @@ class CryptoListViewModel @Inject constructor(
     // UPDATE TIME
     // CACHE DURATION
     init {
-        logcat(TAG){"INIT() called"}
+        logcat(TAG) { "INIT() called" }
     }
 
-    fun login(uname: String, pass: String) {
-        try {
-            viewModelScope.launch {
-                repository.login(uname, pass).collect { signUp ->
-                    // save the Person object to the database
-                    signUp.person.let { person ->
-                        // save the personId Int to the dataStore
-                        person.personId?.let {
-                            repository.savePersonId(it)
-                            _personId.value = it
-                        }
-                        savePerson(person)
-                    }
-
-                    fetchCoinsFromRemote(_personId.value)
-                    fetchTotalValuesFromRemote(_personId.value)
-
-                    sendUiEvent(UIEvent.Navigate(Routes.PERSON_COINS_LIST))
-
-                }
-            }
-        } catch (e: Exception) {
-            logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
-        }
-    }
-
-    fun logout() {
-        try {
-            viewModelScope.launch {
-                val loggedOut = repository.logout()
-                logcat(TAG) { "LOGOUT and loggedOut is : $loggedOut" }
-                // clear all existing values
-               _personCoins.value = RequestState.Success(mutableListOf())
-               _totalValues.value = RequestState.Success(getDummyTotalsValue())
-               _searchedCoins.value = RequestState.Success(mutableListOf())
-
-                clearDatabase()
-                clearPersonId()
-                sendUiEvent(UIEvent.Logout)
-
-            }
-        } catch (e: Exception) {
-            logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
-        }
-    }
-
-    private fun savePerson(person: Person){
-        try{
-            viewModelScope.launch {
-                val cachedPerson = person.personId?.let { repository.getPerson(it) }
-                if (cachedPerson == null) {
-                    // clear person first
-                    repository.deletePerson()
-                    // then save
-                    val result: Long = repository.savePerson(person)
-                    person.personuuid = result.toInt()
-
-                }else{
-                    logcat(TAG){"${cachedPerson.firstName}  ${cachedPerson.lastName} already exists!"}
-                }
-            }
-        }catch (e: Exception){
-            logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
-        }
-    }
-
-    private fun clearPersonId() {
-        try {
-            viewModelScope.launch {
-                repository.savePersonId(0)
-            }
-        } catch (e: Exception) {
-            logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
-        }
-    }
-
-    private fun clearDatabase() {
-        try {
-            viewModelScope.launch {
-                repository.deleteAllCoins()
-                repository.deletePerson()
-            }
-        } catch (e: Exception) {
-            logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
-        }
-    }
     fun onEvent(event: UIEvent) {
         when (event) {
             is ListEvent.OnCoinClicked -> {
@@ -168,13 +84,102 @@ class CryptoListViewModel @Inject constructor(
         }
     }
 
+    fun login(uname: String, pass: String) {
+        viewModelScope.launch {
+            try {
+                repository.login(uname, pass).collect { signUp ->
+                    // save the Person object to the database
+                    signUp.person.let { person ->
+                        // save the personId Int to the dataStore
+                        person.personId?.let {
+                            repository.savePersonId(it)
+                            _personId.value = it
+                        }
+                        savePerson(person)
+                    }
+                    fetchCoinsFromRemote(_personId.value)
+                    fetchTotalValuesFromRemote(_personId.value)
+                    sendUiEvent(UIEvent.Navigate(Routes.PERSON_COINS_LIST))
+                }
+
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
+                if (e is HttpException) {
+                    sendUiEvent(UIEvent.ShowSnackbar(
+                        message = "Login Error: ${e.localizedMessage as String} Please check your values and try again.",
+                        action = null
+                    ))
+                }
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                val loggedOut = repository.logout()
+                logcat(TAG) { "LOGOUT and loggedOut is : $loggedOut" }
+                // clear all existing values
+                _personCoins.value = RequestState.Success(mutableListOf())
+                _totalValues.value = RequestState.Success(getDummyTotalsValue())
+                _searchedCoins.value = RequestState.Success(mutableListOf())
+
+                clearDatabase()
+                clearPersonId()
+                sendUiEvent(UIEvent.Logout)
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
+            }
+        }
+    }
+
+    private fun savePerson(person: Person) {
+        viewModelScope.launch {
+            try {
+                val cachedPerson = person.personId?.let { repository.getPerson(it) }
+                if (cachedPerson == null) {
+                    // clear person first
+                    repository.deletePerson()
+                    // then save
+                    val result: Long = repository.savePerson(person)
+                    person.personuuid = result.toInt()
+
+                } else {
+                    logcat(TAG) { "${cachedPerson.firstName}  ${cachedPerson.lastName} already exists!" }
+                }
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
+            }
+
+        }
+
+    }
+
+    private fun clearPersonId() {
+        viewModelScope.launch {
+            try {
+                repository.savePersonId(0)
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
+            }
+        }
+    }
+
+    private fun clearDatabase() {
+        viewModelScope.launch {
+            try {
+                repository.deleteAllCoins()
+                repository.deletePerson()
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
+            }
+        }
+    }
+
     private fun fetchCoinsFromRemote(personId: Int) {
-
         _personCoins.value = RequestState.Loading
-
-        try {
-            viewModelScope.launch {
-
+        viewModelScope.launch {
+            try {
                 repository.getPersonCoins(personId, DataSource.REMOTE).collect {
                     _personCoins.value = RequestState.Success(it).data
                     sendUiEvent(ListEvent.OnAppInit(personId))
@@ -191,16 +196,16 @@ class CryptoListViewModel @Inject constructor(
                 storeCoinsInDatabase(personCoinsList)
                 // initial sort state
                 saveSortState(CoinSort.NAME)
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
+                _personCoins.value = RequestState.Error(e.localizedMessage as String)
             }
-        } catch (e: Exception) {
-            _personCoins.value = RequestState.Error(e.localizedMessage as String)
         }
-
     }
 
     fun fetchCoinsFromDatabase(personId: Int) {
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
                 repository.getPersonCoins(personId, DataSource.LOCAL).collect {
                     _personCoins.value = RequestState.Success(it).data
 
@@ -211,21 +216,20 @@ class CryptoListViewModel @Inject constructor(
 
                     println("$TAG COINS from DATABASE are: ${personCoins.value}")
                 }
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
+                _personCoins.value = RequestState.Error(e.localizedMessage as String)
             }
-        } catch (e: Exception) {
-            _personCoins.value = RequestState.Error(e.localizedMessage as String)
         }
     }
 
     private fun fetchTotalValuesFromRemote(personId: Int) {
         _totalValues.value = RequestState.Loading
-        try {
-
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
                 repository.getTotalValues(personId).collect {
                     _totalValues.value = RequestState.Success(it).data
                 }
-
                 // Delete existing TotalValues
                 deleteTotalValues()
 
@@ -233,90 +237,88 @@ class CryptoListViewModel @Inject constructor(
 
                 println("$TAG TotalValues that are stored in DB $totalsToStore")
                 storeTotalValuesInDatabase(totalsToStore as TotalValues)
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
+                _totalValues.value = RequestState.Error(e.localizedMessage as String)
             }
-
-        } catch (e: Exception) {
-            _totalValues.value = RequestState.Error(e.localizedMessage as String)
         }
     }
 
     private fun fetchTotalValuesFromDatabase() {
         _totalValues.value = RequestState.Loading
-
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
                 repository.getTotalValues(1).collect {
                     _totalValues.value = RequestState.Success(it).data
                 }
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+
         }
+
     }
 
     private fun storeCoinsInDatabase(list: List<CryptoValue>) {
-        try {
-
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
                 repository.insertAll(list).collect {
                     println("$TAG INSERT ALL and result is $it")
                 }
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
             }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
     private fun storeTotalValuesInDatabase(totalValues: TotalValues) {
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
                 repository.insertTotalValues(totalValues)
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
     private fun deleteAllCoins() {
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
                 repository.deleteAllCoins()
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
     private fun deleteTotalValues() {
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
                 repository.deleteTotalValues()
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
     fun searchDatabase(searchQuery: String) {
         _searchedCoins.value = RequestState.Loading
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
                 repository.searchDatabase(searchQuery = "%$searchQuery%")
                     .collect {
-
                         _searchedCoins.value = RequestState.Success(it)
-
                         val coin =
                             (searchedCoins.value as RequestState.Success<List<CryptoValue>>).data
                         println("$TAG in searchDatabase and coins are : $coin")
                     }
+
+            } catch (e: Exception) {
+                _searchedCoins.value = RequestState.Error(e.localizedMessage as String)
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
             }
-        } catch (e: Exception) {
-            _searchedCoins.value = RequestState.Error(e.localizedMessage as String)
         }
     }
-
 
     fun saveSortState(coinSort: CoinSort) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -328,8 +330,8 @@ class CryptoListViewModel @Inject constructor(
 
     fun getSortState() {
         _sortState.value = RequestState.Loading
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
                 repository.getSortState().map {
                     CoinSort.valueOf(it)
                 }.collect {
@@ -340,11 +342,12 @@ class CryptoListViewModel @Inject constructor(
                     val sortedlist = sortCryptoValueList(personCoinsList, sortStateCache)
                     _personCoins.value = RequestState.Success(sortedlist)
                 }
+            } catch (e: Exception) {
+                _sortState.value = RequestState.Error(e.localizedMessage as String)
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
             }
-
-        } catch (e: Exception) {
-            _sortState.value = RequestState.Error(e.localizedMessage as String)
         }
+
     }
 
     private fun sendUiEvent(event: UIEvent) {
@@ -356,6 +359,7 @@ class CryptoListViewModel @Inject constructor(
     companion object {
         private val TAG = CryptoListViewModel::class.java.simpleName
     }
+
 
 }
 

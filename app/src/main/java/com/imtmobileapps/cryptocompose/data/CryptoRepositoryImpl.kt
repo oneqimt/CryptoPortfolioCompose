@@ -15,7 +15,7 @@ import javax.inject.Inject
 @ViewModelScoped
 class CryptoRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
-    private val localDataSource: LocalDataSource
+    private val localDataSource: LocalDataSource,
 ) : CryptoRepository {
 
     override suspend fun login(uname: String, pass: String): Flow<SignUp> {

@@ -61,12 +61,7 @@ fun PersonCoinsDetailScreen(
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is UIEvent.PopBackStack -> onPopBackStack()
-                is UIEvent.ShowSnackbar -> {
-                    scaffoldState.snackbarHostState.showSnackbar(
-                        message = event.message,
-                        actionLabel = event.action
-                    )
-                }
+
                 else -> Unit
             }
         }
