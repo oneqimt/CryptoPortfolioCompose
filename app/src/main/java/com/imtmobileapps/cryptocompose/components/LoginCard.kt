@@ -1,7 +1,5 @@
 package com.imtmobileapps.cryptocompose.components
 
-import android.widget.Toast
-import androidx.compose.animation.core.keyframes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -15,9 +13,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -33,9 +31,9 @@ import androidx.compose.ui.unit.dp
 import com.imtmobileapps.cryptocompose.R
 import com.imtmobileapps.cryptocompose.ui.theme.cardBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.cardBorderColor
-import com.imtmobileapps.cryptocompose.util.removeWhiteSpace
 import com.imtmobileapps.cryptocompose.util.validatePassword
 import com.imtmobileapps.cryptocompose.util.validateUsername
+import kotlinx.coroutines.launch
 import logcat.logcat
 
 @Composable
@@ -62,163 +60,180 @@ fun LoginCard(
 
         val focusManager = LocalFocusManager.current
         val TAG = "LoginScreen"
-        val context = LocalContext.current
 
         val passwordVisibility = remember { mutableStateOf(false) }
 
         val isUsernameError = rememberSaveable { mutableStateOf(false) }
         val isPasswordError = rememberSaveable { mutableStateOf(false) }
+        val scaffoldState = rememberScaffoldState()
+        val scope = rememberCoroutineScope()
+        val errorMessage = stringResource(id = R.string.check_fields)
 
-        Column(
-            modifier =
-            Modifier
-                .verticalScroll(rememberScrollState())
-                .padding(10.dp, 20.dp))
-        {
-
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                // USERNAME
-                TextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = usernameText,
-
-                    label = { Text(text = stringResource(id = R.string.user_name)) },
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next,
-                        keyboardType = KeyboardType.Text),
-                    keyboardActions = KeyboardActions(onNext = {
-                        if (!validateUsername(usernameText)) {
-                            isUsernameError.value = true
-
-                        } else {
-                            focusManager.moveFocus(FocusDirection.Down)
-                            isUsernameError.value = false
-                        }
-
-                    }),
-
-                    onValueChange = {
-                        onUsernameChanged(it)
-                        isUsernameError.value = it.length <= 1
-
-                    },
-
-                    isError = isUsernameError.value
-                )
-            }// end 1st row
-            Spacer(modifier = Modifier.height(20.dp))
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center)
+        Scaffold(scaffoldState = scaffoldState) {
+            Column(
+                modifier =
+                Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(10.dp, 20.dp))
             {
-                // PASSWORD
-                TextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = passwordText,
-                    onValueChange = {
-                        onPasswordChanged(it)
-                    },
-                    label = { (Text(text = stringResource(id = R.string.password))) },
-                    placeholder = { Text(text = stringResource(id = R.string.password)) },
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done,
-                        keyboardType = KeyboardType.Password),
-                    keyboardActions = KeyboardActions(onDone = {
-                        if (!validatePassword(passwordText)) {
-                            isPasswordError.value = true
 
-                        }else{
-                            focusManager.clearFocus()
-                            isPasswordError.value = false
-                            onDone()
-                        }
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    // USERNAME
+                    TextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = usernameText,
 
-                    }),
-                    visualTransformation =
-                    if (passwordVisibility.value) VisualTransformation.None
-                    else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        val image = if (passwordVisibility.value) {
-                            Icons.Filled.Visibility
-                        } else {
-                            Icons.Filled.VisibilityOff
-                        }
-                        IconButton(onClick = {
-                            passwordVisibility.value = !passwordVisibility.value
-                        }) {
-                            Icon(imageVector = image, null)
-                        }
-                    },
-                    isError = isPasswordError.value
+                        label = { Text(text = stringResource(id = R.string.user_name)) },
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next,
+                            keyboardType = KeyboardType.Text),
+                        keyboardActions = KeyboardActions(onNext = {
+                            if (!validateUsername(usernameText)) {
+                                isUsernameError.value = true
 
-                )
-            }// end 2nd row
+                            } else {
+                                focusManager.moveFocus(FocusDirection.Down)
+                                isUsernameError.value = false
+                            }
 
-            Spacer(modifier = Modifier.height(10.dp))
-            // FORGOT PASSWORD
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center)
-            {
-                TextButton(onClick = {
-                    onForgotPasswordClicked()
-                }, enabled = true) {
-                    Text(text = stringResource(id = R.string.forgot_password))
-                }
-            }// end 3rd row
+                        }),
 
-            // SIGN IN BUTTON
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center)
-            {
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        if (!isUsernameError.value && !isPasswordError.value){
-                            onSignInClicked()
-                        }else {
-                            logcat(TAG) { "SHOW error here!" }
-                            focusManager.clearFocus()
-                            Toast.makeText(
-                                context,
-                                "Please check you fields before submitting",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
+                        onValueChange = {
+                            onUsernameChanged(it)
+                            isUsernameError.value = it.length <= 1
 
-                    })
+                        },
+
+                        isError = isUsernameError.value
+                    )
+                }// end 1st row
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center)
                 {
-                    Text(text = stringResource(id = R.string.sign_in))
-                }
+                    // PASSWORD
+                    TextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = passwordText,
+                        onValueChange = {
+                            onPasswordChanged(it)
+                            isPasswordError.value = it.length <= 1
+                        },
+                        label = { (Text(text = stringResource(id = R.string.password))) },
+                        placeholder = { Text(text = stringResource(id = R.string.password)) },
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done,
+                            keyboardType = KeyboardType.Password),
+                        keyboardActions = KeyboardActions(onDone = {
+                            if (!validatePassword(passwordText)) {
+                                isPasswordError.value = true
 
-            }// end 4th row
+                            } else {
+                                focusManager.clearFocus()
+                                isPasswordError.value = false
+                                onDone()
+                            }
 
-            Spacer(modifier = Modifier.height(10.dp))
+                        }),
+                        visualTransformation =
+                        if (passwordVisibility.value) VisualTransformation.None
+                        else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            val image = if (passwordVisibility.value) {
+                                Icons.Filled.Visibility
+                            } else {
+                                Icons.Filled.VisibilityOff
+                            }
+                            IconButton(onClick = {
+                                passwordVisibility.value = !passwordVisibility.value
+                            }) {
+                                Icon(imageVector = image, null)
+                            }
+                        },
+                        isError = isPasswordError.value
 
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center)
-            {
-                Text(text = stringResource(id = R.string.do_not_have_account))
+                    )
+                }// end 2nd row
 
-            }// end 5th row
-
-            // CREATE ACCOUNT
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center)
-            {
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        onCreateAccountClicked()
-                    })
+                Spacer(modifier = Modifier.height(10.dp))
+                // FORGOT PASSWORD
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center)
                 {
-                    Text(text = stringResource(id = R.string.create_account))
-                }
+                    TextButton(onClick = {
+                        onForgotPasswordClicked()
+                    }, enabled = true) {
+                        Text(text = stringResource(id = R.string.forgot_password))
+                    }
+                }// end 3rd row
 
-            }// end 6th row
+                // SIGN IN BUTTON
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center)
+                {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            if (validateUsername(usernameText) && validatePassword(passwordText)) {
+                                logcat(TAG) { "CALL onSignInClicked()" }
+                                onSignInClicked()
+                                focusManager.clearFocus()
+                            } else {
+                                logcat(TAG) { "Fields are not valid!" }
+                                // Have to check both fields, so that we may show which one has error
+                                if (!validateUsername(usernameText)) {
+                                    isUsernameError.value = true
+                                }
+                                if (!validateUsername(passwordText)) {
+                                    isPasswordError.value = true
+                                }
 
+                                focusManager.clearFocus()
+
+                                scope.launch {
+                                    scaffoldState.snackbarHostState.showSnackbar(errorMessage)
+                                }
+
+                            }
+
+                        })
+                    {
+                        Text(text = stringResource(id = R.string.sign_in))
+                    }
+
+                }// end 4th row
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center)
+                {
+                    Text(text = stringResource(id = R.string.do_not_have_account))
+
+                }// end 5th row
+
+                // CREATE ACCOUNT
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center)
+                {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            onCreateAccountClicked()
+                        })
+                    {
+                        Text(text = stringResource(id = R.string.create_account))
+                    }
+
+                }// end 6th row
+
+            } // end column
         }
+
 
     }
 }
+
 
 @Preview
 @Composable

@@ -30,5 +30,6 @@
     <string name="sign_in">Sign In</string>
     <string name="create_account">Create Account</string>
     <string name="logout">Logout</string>
+    <string name="check_fields">Please check your fields before submitting</string>
 
 </resources>

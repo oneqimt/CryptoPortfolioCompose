@@ -60,7 +60,6 @@ fun sortCryptoValueList(
 
 }
 
-// TODO check why we cannot unit test an extension function
 // This would be a good extension for String class
 fun removeWhiteSpace(str: String): String {
 
@@ -83,11 +82,6 @@ fun validatePassword(pass: String):Boolean{
     return pass.isNotEmpty()
 }
 
-fun validateLoginValues(uname: String, pass: String): Boolean{
-    val unameClean = removeWhiteSpace(uname)
-    val passClean = removeWhiteSpace(pass)
-    return unameClean.isNotEmpty() && passClean.isNotEmpty()
-}
 
 fun validateAddHoldingValues(quantity: String, cost: String): Boolean {
     val quantityClean = removeWhiteSpace(quantity)
