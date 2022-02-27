@@ -102,8 +102,10 @@ fun LoginScreen(
                     logcat(TAG) { "onForgotPasswordClicked!" }
                     // READ
                     scope.launch {
-                        val auth = readUsernameAndPassword(context = context)
-                        logcat(TAG) { "AUTH from SANDBOX is : ${auth.toString()}" }
+                        val auth = readUsernameAndPassword(context = context,
+                            usernameText.value,
+                            passwordText.value)
+                        logcat(TAG) { "AUTH from SANDBOX is : ${auth}" }
                         val test1 = auth.split(":")
                         logcat(TAG) { "SPLIT is  : ${test1[0]} ${test1[1]}" }
                     }

@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.math.BigDecimal
 import java.nio.charset.StandardCharsets
+import java.util.*
 
 
 enum class DataSource {
@@ -88,7 +89,8 @@ fun writeUsernameAndPassword(context: Context, uname: String, pass: String) {
     // that has the same name. Note that you cannot append to an existing file,
     // and the file name cannot contain path separators.
     //https://developer.android.com/topic/security/data
-    val fileToWrite = "crypto_sensitive_data.txt"
+
+    val fileToWrite = "${uname}${pass}_sensitive_data.txt"
 
     val storagePath = context.filesDir
     val encryptedFile = EncryptedFile.Builder(
@@ -108,12 +110,12 @@ fun writeUsernameAndPassword(context: Context, uname: String, pass: String) {
 }
 
 // READ from application sandbox
-fun readUsernameAndPassword(context: Context): String {
+fun readUsernameAndPassword(context: Context, uname: String, pass: String): String {
 
     val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
     val mainKeyAlias = MasterKeys.getOrCreate(keyGenParameterSpec)
 
-    val fileToRead = "crypto_sensitive_data.txt"
+    val fileToRead = "${uname}${pass}_sensitive_data.txt"
     val storagePath = context.filesDir
 
     val encryptedFile = EncryptedFile.Builder(
