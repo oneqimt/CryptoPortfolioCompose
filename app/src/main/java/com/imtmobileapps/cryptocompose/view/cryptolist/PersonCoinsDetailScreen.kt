@@ -244,7 +244,8 @@ fun PersonCoinsDetailScreen(
                 } // item 3 end
 
             }// main column end
-        })
+        }// content end
+    ) // scaffold end
 
 
 }

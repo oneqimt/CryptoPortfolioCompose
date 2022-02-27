@@ -4,21 +4,26 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.imtmobileapps.cryptocompose.R
 import com.imtmobileapps.cryptocompose.components.LoginCard
 import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarContentColor
+import com.imtmobileapps.cryptocompose.util.readUsernameAndPassword
+import com.imtmobileapps.cryptocompose.util.writeUsernameAndPassword
 import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import logcat.logcat
 
 @Composable
 fun LoginScreen(
     viewModel: CryptoListViewModel,
-    onNavigate: () -> Unit
+    onNavigate: () -> Unit,
 ) {
 
     val TAG = "LoginScreen"
@@ -34,11 +39,14 @@ fun LoginScreen(
     val scaffoldState =
         rememberScaffoldState() // This is here in case we want to display a snackbar
 
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is UIEvent.Navigate -> {
-                    logcat(TAG){"UIEvent.Navigate called in LoginScreen and route is ${event.route}"}
+                    logcat(TAG) { "UIEvent.Navigate called in LoginScreen and route is ${event.route}" }
                     onNavigate()
                 }
 
@@ -92,12 +100,25 @@ fun LoginScreen(
                 },
                 onForgotPasswordClicked = {
                     logcat(TAG) { "onForgotPasswordClicked!" }
+                    // READ
+                    scope.launch {
+                        val auth = readUsernameAndPassword(context = context)
+                        logcat(TAG) { "AUTH from SANDBOX is : ${auth.toString()}" }
+                        val test1 = auth.split(":")
+                        logcat(TAG) { "SPLIT is  : ${test1[0]} ${test1[1]}" }
+                    }
                 },
                 onCreateAccountClicked = {
                     logcat(TAG) { "onCreateAccountClicked!" }
+                    // WRITE
+                    scope.launch {
+                        writeUsernameAndPassword(context = context,
+                            usernameText.value,
+                            passwordText.value)
+                    }
+
                 }
             )
         })
-
 
 }

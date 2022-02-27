@@ -1,11 +1,16 @@
 package com.imtmobileapps.cryptocompose.util
 
+import android.content.Context
+import androidx.security.crypto.EncryptedFile
+import androidx.security.crypto.MasterKeys
 import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.model.CryptoValue
-import com.imtmobileapps.cryptocompose.model.ReturnDTO
 import com.imtmobileapps.cryptocompose.model.TotalValues
+import java.io.ByteArrayOutputStream
+import java.io.File
 import java.math.BigDecimal
-import kotlin.math.cos
+import java.nio.charset.StandardCharsets
+
 
 enum class DataSource {
     LOCAL,
@@ -73,12 +78,74 @@ fun removeWhiteSpace(str: String): String {
 
 }
 
-fun validateUsername(uname: String):Boolean{
+// WRITE to application sandbox
+fun writeUsernameAndPassword(context: Context, uname: String, pass: String) {
+
+    val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
+    val mainKeyAlias = MasterKeys.getOrCreate(keyGenParameterSpec)
+
+    // Create a file with this name, or replace an entire existing file
+    // that has the same name. Note that you cannot append to an existing file,
+    // and the file name cannot contain path separators.
+    //https://developer.android.com/topic/security/data
+    val fileToWrite = "crypto_sensitive_data.txt"
+
+    val storagePath = context.filesDir
+    val encryptedFile = EncryptedFile.Builder(
+        File(storagePath, fileToWrite),
+        context,
+        mainKeyAlias,
+        EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+    ).build()
+    val str = "$uname:$pass"
+    val fileContent = str.toByteArray(StandardCharsets.UTF_8)
+    encryptedFile.openFileOutput().apply {
+        write(fileContent)
+        flush()
+        close()
+    }
+
+}
+
+// READ from application sandbox
+fun readUsernameAndPassword(context: Context): String {
+
+    val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
+    val mainKeyAlias = MasterKeys.getOrCreate(keyGenParameterSpec)
+
+    val fileToRead = "crypto_sensitive_data.txt"
+    val storagePath = context.filesDir
+
+    val encryptedFile = EncryptedFile.Builder(
+        File(storagePath, fileToRead),
+        context,
+        mainKeyAlias,
+        EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+    ).build()
+
+    val inputStream = encryptedFile.openFileInput()
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    var nextByte: Int = inputStream.read()
+    while (nextByte != -1) {
+        byteArrayOutputStream.write(nextByte)
+        nextByte = inputStream.read()
+    }
+
+    encryptedFile.openFileInput().apply {
+        close()
+    }
+
+    return byteArrayOutputStream.toString()
+
+}
+
+
+fun validateUsername(uname: String): Boolean {
 
     return uname.isNotEmpty()
 }
 
-fun validatePassword(pass: String):Boolean{
+fun validatePassword(pass: String): Boolean {
     return pass.isNotEmpty()
 }
 

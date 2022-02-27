@@ -1,5 +1,6 @@
 package com.imtmobileapps.cryptocompose.viewmodel
 
+import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -67,7 +68,6 @@ class CryptoListViewModel @Inject constructor(
     fun onEvent(event: UIEvent) {
         when (event) {
             is ListEvent.OnCoinClicked -> {
-
                 _selectedCryptoValue.value = event.cryptoValue
                 val route = Routes.PERSON_COINS_DETAIL + "?cmcId=${event.cryptoValue.coin.cmcId}"
                 println("$TAG ListEvent.OnCoinClicked NAVIGATE to this route:  $route")
@@ -123,9 +123,9 @@ class CryptoListViewModel @Inject constructor(
                 _personCoins.value = RequestState.Success(mutableListOf())
                 _totalValues.value = RequestState.Success(getDummyTotalsValue())
                 _searchedCoins.value = RequestState.Success(mutableListOf())
-
                 clearDatabase()
                 clearPersonId()
+                // notify the UI
                 sendUiEvent(UIEvent.Logout)
             } catch (e: Exception) {
                 logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
