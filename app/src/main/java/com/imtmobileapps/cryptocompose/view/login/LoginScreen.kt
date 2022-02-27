@@ -13,6 +13,7 @@ import com.imtmobileapps.cryptocompose.components.LoginCard
 import com.imtmobileapps.cryptocompose.event.UIEvent
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarContentColor
+import com.imtmobileapps.cryptocompose.util.deleteSensitiveFile
 import com.imtmobileapps.cryptocompose.util.readUsernameAndPassword
 import com.imtmobileapps.cryptocompose.util.writeUsernameAndPassword
 import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
@@ -37,15 +38,20 @@ fun LoginScreen(
         mutableStateOf("")
     }
 
+    val checked = rememberSaveable {
+        mutableStateOf(false)
+
+    }
+
     val scaffoldState =
         rememberScaffoldState() // This is here in case we want to display a snackbar
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val doesFileExist = rememberSaveable {
+   /* val doesFileExist = rememberSaveable {
         mutableStateOf(false)
-    }
+    }*/
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
@@ -107,43 +113,55 @@ fun LoginScreen(
                     logcat(TAG) { "onForgotPasswordClicked!" }
                     // READ
                     scope.launch {
-                        val auth = readUsernameAndPassword(context = context)
-                        logcat(TAG) { "AUTH from SANDBOX is : ${auth}" }
-                        val test1 = auth.split(":")
-                        logcat(TAG) { "SPLIT is  : ${test1[0]} ${test1[1]}" }
-                    }
-                },
-                onCreateAccountClicked = {
-                    logcat(TAG) { "onCreateAccountClicked!" }
-                    // WRITE
-                    scope.launch {
-                        // SEE if the file is there FIRST
+                        // SEE if the file is there FIRST, before trying to read
                         try {
-                            readUsernameAndPassword(context)
+                            val auth = readUsernameAndPassword(context = context)
+                            logcat(TAG) { "AUTH from SANDBOX is : ${auth}" }
+                            val test1 = auth.split(":")
+                            logcat(TAG) { "SPLIT is  : ${test1[0]} ${test1[1]}" }
+                           // doesFileExist.value = true
                         } catch (e: FileNotFoundException) {
                             logcat(TAG) { "FileNotFoundException ${e.localizedMessage as String}" }
-                            doesFileExist.value = false
+                           // doesFileExist.value = false
                         } catch (e: Exception) {
                             logcat(TAG) { "READ PROBLEM ${e.localizedMessage as String}" }
                         }
                     }
+                },
+                onCreateAccountClicked = {
+                    logcat(TAG) { "onCreateAccountClicked!" }
 
+                },
+
+                onRememberMeChecked = {
+                    checked.value = it
+                    logcat(TAG) { "CHECKED VALUE IS:  ${checked.value}" }
                     scope.launch {
-                        // If the file does not exist, create it
-                        if (!doesFileExist.value){
+                        if (!checked.value) {
+                            // delete the file
+                            try {
+                                deleteSensitiveFile(context = context)
+                                //doesFileExist.value = false
+                            } catch (e: Exception) {
+                                logcat(TAG) { "Problem resetting ${e.localizedMessage as String}" }
+                            }
+
+                        } else {
+                            // write it
                             try {
                                 writeUsernameAndPassword(context = context,
                                     usernameText.value,
                                     passwordText.value)
-                                doesFileExist.value = true
-                                logcat(TAG) { "doesFileExist is ${doesFileExist.value}" }
+                                //doesFileExist.value = true
+                                logcat(TAG) { "Write File Success" }
                             } catch (e: Exception) {
                                 // notify user that the file already exists
                                 logcat(TAG) { "Problem writing file ${e.localizedMessage as String}" }
                             }
                         }
                     }
-                }
+                },
+                checked = checked.value
             )
         })
 }

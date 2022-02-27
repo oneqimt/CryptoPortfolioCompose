@@ -19,7 +19,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -31,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.imtmobileapps.cryptocompose.R
 import com.imtmobileapps.cryptocompose.ui.theme.cardBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.cardBorderColor
+import com.imtmobileapps.cryptocompose.util.Constants.MINIMUM_CHARS
 import com.imtmobileapps.cryptocompose.util.validatePassword
 import com.imtmobileapps.cryptocompose.util.validateUsername
 import kotlinx.coroutines.launch
@@ -46,6 +46,8 @@ fun LoginCard(
     onSignInClicked: () -> Unit,
     onForgotPasswordClicked: () -> Unit,
     onCreateAccountClicked: () -> Unit,
+    onRememberMeChecked: (Boolean) -> Unit,
+    checked:Boolean
 ) {
     Card(
         modifier = Modifier
@@ -80,7 +82,7 @@ fun LoginCard(
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    // USERNAME
+                    /* *****************-USERNAME-****************** */
                     TextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = usernameText,
@@ -101,24 +103,25 @@ fun LoginCard(
 
                         onValueChange = {
                             onUsernameChanged(it)
-                            isUsernameError.value = it.length <= 1
+                            isUsernameError.value = it.length <= MINIMUM_CHARS
 
                         },
 
                         isError = isUsernameError.value
                     )
-                }// end 1st row
+                }// end username
+
                 Spacer(modifier = Modifier.height(20.dp))
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center)
                 {
-                    // PASSWORD
+                    /* *****************-PASSWORD-****************** */
                     TextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = passwordText,
                         onValueChange = {
                             onPasswordChanged(it)
-                            isPasswordError.value = it.length <= 1
+                            isPasswordError.value = it.length <= MINIMUM_CHARS
                         },
                         label = { (Text(text = stringResource(id = R.string.password))) },
                         placeholder = { Text(text = stringResource(id = R.string.password)) },
@@ -156,7 +159,28 @@ fun LoginCard(
                 }// end 2nd row
 
                 Spacer(modifier = Modifier.height(10.dp))
-                // FORGOT PASSWORD
+                /* *****************-REMEMBER ME-****************** */
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End)
+                {
+                    // checkbox
+                    Checkbox(
+                        checked = checked,
+                        onCheckedChange ={
+                            onRememberMeChecked(it)
+                        }
+
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.remember_me), 
+                        modifier = Modifier.padding(5.dp, 12.dp, 10.dp, 0.dp)
+                    )
+                }// end Remember Me
+
+
+                Spacer(modifier = Modifier.height(10.dp))
+                /* *****************-FORGOT PASSWORD-****************** */
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center)
                 {
@@ -165,9 +189,9 @@ fun LoginCard(
                     }, enabled = true) {
                         Text(text = stringResource(id = R.string.forgot_password))
                     }
-                }// end 3rd row
+                }// end Forgot Password
 
-                // SIGN IN BUTTON
+                /* *****************-SIGN IN BUTTON-****************** */
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center)
                 {
@@ -201,7 +225,7 @@ fun LoginCard(
                         Text(text = stringResource(id = R.string.sign_in))
                     }
 
-                }// end 4th row
+                }// end sign in button
 
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -210,9 +234,9 @@ fun LoginCard(
                 {
                     Text(text = stringResource(id = R.string.do_not_have_account))
 
-                }// end 5th row
+                }// end static text
 
-                // CREATE ACCOUNT
+                /* *****************-CREATE ACCOUNT BUTTON-****************** */
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center)
                 {
@@ -225,11 +249,9 @@ fun LoginCard(
                         Text(text = stringResource(id = R.string.create_account))
                     }
 
-                }// end 6th row
-
+                }// end Create Account
             } // end column
         }
-
 
     }
 }
@@ -247,7 +269,9 @@ fun LoginCardPreview() {
         onDone = {},
         onSignInClicked = {},
         onForgotPasswordClicked = {},
-        onCreateAccountClicked = {}
+        onCreateAccountClicked = {},
+        onRememberMeChecked = {},
+        checked = false
     )
 }
 

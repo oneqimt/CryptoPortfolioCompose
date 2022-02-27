@@ -14,6 +14,9 @@ object Constants {
     const val UPDATE_TIME_KEY = "update_time"
     const val CACHE_DURATION_KEY = "cache_duration"
 
+    // LOGIN inputs
+    const val MINIMUM_CHARS = 4
+
 
     
 }

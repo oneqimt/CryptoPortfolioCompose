@@ -100,6 +100,13 @@ fun writeUsernameAndPassword(context: Context, uname: String, pass: String) {
         flush()
         close()
     }
+}
+
+fun deleteSensitiveFile(context: Context){
+    val fileToDelete = "crypto_sensitive_data.txt"
+    val storagePath = context.filesDir
+    val data = File(storagePath,fileToDelete)
+    data.delete()
 
 }
 
