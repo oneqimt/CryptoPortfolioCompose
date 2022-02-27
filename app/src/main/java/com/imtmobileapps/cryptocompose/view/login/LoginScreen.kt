@@ -19,6 +19,7 @@ import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import logcat.logcat
+import java.io.FileNotFoundException
 
 @Composable
 fun LoginScreen(
@@ -41,6 +42,10 @@ fun LoginScreen(
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    val doesFileExist = rememberSaveable {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
@@ -102,9 +107,7 @@ fun LoginScreen(
                     logcat(TAG) { "onForgotPasswordClicked!" }
                     // READ
                     scope.launch {
-                        val auth = readUsernameAndPassword(context = context,
-                            usernameText.value,
-                            passwordText.value)
+                        val auth = readUsernameAndPassword(context = context)
                         logcat(TAG) { "AUTH from SANDBOX is : ${auth}" }
                         val test1 = auth.split(":")
                         logcat(TAG) { "SPLIT is  : ${test1[0]} ${test1[1]}" }
@@ -114,13 +117,33 @@ fun LoginScreen(
                     logcat(TAG) { "onCreateAccountClicked!" }
                     // WRITE
                     scope.launch {
-                        writeUsernameAndPassword(context = context,
-                            usernameText.value,
-                            passwordText.value)
+                        // SEE if the file is there FIRST
+                        try {
+                            readUsernameAndPassword(context)
+                        } catch (e: FileNotFoundException) {
+                            logcat(TAG) { "FileNotFoundException ${e.localizedMessage as String}" }
+                            doesFileExist.value = false
+                        } catch (e: Exception) {
+                            logcat(TAG) { "READ PROBLEM ${e.localizedMessage as String}" }
+                        }
                     }
 
+                    scope.launch {
+                        // If the file does not exist, create it
+                        if (!doesFileExist.value){
+                            try {
+                                writeUsernameAndPassword(context = context,
+                                    usernameText.value,
+                                    passwordText.value)
+                                doesFileExist.value = true
+                                logcat(TAG) { "doesFileExist is ${doesFileExist.value}" }
+                            } catch (e: Exception) {
+                                // notify user that the file already exists
+                                logcat(TAG) { "Problem writing file ${e.localizedMessage as String}" }
+                            }
+                        }
+                    }
                 }
             )
         })
-
 }
