@@ -41,16 +41,20 @@ class MainActivity : ComponentActivity() {
             CryptoComposeTheme {
 
                 val navController = rememberNavController()
+                // popUpTo: https://developer.android.com/jetpack/compose/navigation
                 NavHost(
                     navController = navController,
-                    startDestination = Routes.LOGIN_SCREEN
-                ) {
+                    startDestination = Routes.LOGIN_SCREEN,
+
+                    ) {
 
                     composable(
                         Routes.LOGIN_SCREEN
                     ) {
                         LoginScreen(viewModel = viewModel, onNavigate = {
-                            navController.navigate(Routes.PERSON_COINS_LIST)
+                            navController.navigate(Routes.PERSON_COINS_LIST) {
+                                popUpTo(Routes.LOGIN_SCREEN) { inclusive = true }
+                            }
                         })
                     }
 
@@ -58,13 +62,11 @@ class MainActivity : ComponentActivity() {
                         PersonCoinsListScreen(
                             onNavigate = {
                                 navController.navigate(it.route)
-                                println("MAIN Activity and onNavigate called and route is : $it.route")
                             }, viewModel
                         )
                     }
                     composable(
-                        // Not used now, but pass the CryptoValue id argument in case we want to retrieve from DB later
-                        //?cmcId=${event.cryptoValue.coin.cmcId
+                        // Not used now, but we may later
                         route = Routes.PERSON_COINS_DETAIL + "?cmcId={cmcId}",
                         arguments = listOf(
                             navArgument(name = "cmcId") {
@@ -73,9 +75,9 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     ) {
-                        // Not used, but we may later
+                        // test, can be passed to Composable if necessary
                         val cmcId = it.arguments!!.getInt("cmcId")
-                        logcat(TAG){"ARGUMENT passed is : $cmcId"}
+                        logcat(TAG) { "ARGUMENT passed is : $cmcId" }
                         PersonCoinsDetailScreen(onPopBackStack = {
                             navController.popBackStack()
 
@@ -106,7 +108,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    companion object{
+    companion object {
         private val TAG = MainActivity::class.java.simpleName
     }
 }

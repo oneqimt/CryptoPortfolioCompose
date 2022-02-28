@@ -1,5 +1,6 @@
 package com.imtmobileapps.cryptocompose.view.cryptolist
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,6 +41,10 @@ fun PersonCoinsListScreen(
     val scaffoldState = rememberScaffoldState()
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    // System back button
+    BackHandler {
+
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->

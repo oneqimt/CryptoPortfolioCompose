@@ -68,13 +68,11 @@ class CryptoListViewModel @Inject constructor(
             is ListEvent.OnCoinClicked -> {
                 _selectedCryptoValue.value = event.cryptoValue
                 val route = Routes.PERSON_COINS_DETAIL + "?cmcId=${event.cryptoValue.coin.cmcId}"
-                println("$TAG ListEvent.OnCoinClicked NAVIGATE to this route:  $route")
                 sendUiEvent(UIEvent.Navigate(route))
             }
 
             is ListEvent.OnAddCoinClicked -> {
                 val route = Routes.ADD_HOLDING_LIST
-                println("$TAG ListEvent.OnAddCoinClicked NAVIGATE to this route:  $route")
                 sendUiEvent(UIEvent.Navigate(route))
             }
 
@@ -82,6 +80,7 @@ class CryptoListViewModel @Inject constructor(
         }
     }
 
+    /****************** LOGIN/LOGOUT ****************/
     fun login(uname: String, pass: String) {
         viewModelScope.launch {
             try {
@@ -123,6 +122,7 @@ class CryptoListViewModel @Inject constructor(
                 _searchedCoins.value = RequestState.Success(mutableListOf())
                 clearDatabase()
                 clearPersonId()
+                // NOTE: The sensitive file is deleted in PersonCoinsListAppBar
                 // notify the UI
                 sendUiEvent(UIEvent.Logout)
             } catch (e: Exception) {
@@ -131,6 +131,7 @@ class CryptoListViewModel @Inject constructor(
         }
     }
 
+    /****************** PERSON ****************/
     private fun savePerson(person: Person) {
         viewModelScope.launch {
             try {
@@ -148,9 +149,7 @@ class CryptoListViewModel @Inject constructor(
             } catch (e: Exception) {
                 logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
             }
-
         }
-
     }
 
     private fun clearPersonId() {
@@ -162,18 +161,7 @@ class CryptoListViewModel @Inject constructor(
             }
         }
     }
-
-    private fun clearDatabase() {
-        viewModelScope.launch {
-            try {
-                repository.deleteAllCoins()
-                repository.deletePerson()
-            } catch (e: Exception) {
-                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
-            }
-        }
-    }
-
+    /****************** REMOTE SERVICE CALLS ****************/
     private fun fetchCoinsFromRemote(personId: Int) {
         _personCoins.value = RequestState.Loading
         viewModelScope.launch {
@@ -194,26 +182,6 @@ class CryptoListViewModel @Inject constructor(
                 storeCoinsInDatabase(personCoinsList)
                 // initial sort state
                 saveSortState(CoinSort.NAME)
-            } catch (e: Exception) {
-                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
-                _personCoins.value = RequestState.Error(e.localizedMessage as String)
-            }
-        }
-    }
-
-    fun fetchCoinsFromDatabase(personId: Int) {
-        viewModelScope.launch {
-            try {
-                repository.getPersonCoins(personId, DataSource.LOCAL).collect {
-                    _personCoins.value = RequestState.Success(it).data
-
-                    val personcoinslist =
-                        (personCoins.value as RequestState.Success<List<CryptoValue>>).data
-                    val sortedlist = sortCryptoValueList(personcoinslist, CoinSort.NAME)
-                    _personCoins.value = RequestState.Success(sortedlist)
-
-                    println("$TAG COINS from DATABASE are: ${personCoins.value}")
-                }
             } catch (e: Exception) {
                 logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
                 _personCoins.value = RequestState.Error(e.localizedMessage as String)
@@ -242,6 +210,38 @@ class CryptoListViewModel @Inject constructor(
         }
     }
 
+    /****************** DATABASE QUERIES ****************/
+    private fun clearDatabase() {
+        viewModelScope.launch {
+            try {
+                repository.deleteAllCoins()
+                repository.deletePerson()
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
+            }
+        }
+    }
+
+    fun fetchCoinsFromDatabase(personId: Int) {
+        viewModelScope.launch {
+            try {
+                repository.getPersonCoins(personId, DataSource.LOCAL).collect {
+                    _personCoins.value = RequestState.Success(it).data
+
+                    val personcoinslist =
+                        (personCoins.value as RequestState.Success<List<CryptoValue>>).data
+                    val sortedlist = sortCryptoValueList(personcoinslist, CoinSort.NAME)
+                    _personCoins.value = RequestState.Success(sortedlist)
+
+                    println("$TAG COINS from DATABASE are: ${personCoins.value}")
+                }
+            } catch (e: Exception) {
+                logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
+                _personCoins.value = RequestState.Error(e.localizedMessage as String)
+            }
+        }
+    }
+
     private fun fetchTotalValuesFromDatabase() {
         _totalValues.value = RequestState.Loading
         viewModelScope.launch {
@@ -252,9 +252,7 @@ class CryptoListViewModel @Inject constructor(
             } catch (e: Exception) {
                 logcat(TAG, LogPriority.ERROR) { e.localizedMessage as String }
             }
-
         }
-
     }
 
     private fun storeCoinsInDatabase(list: List<CryptoValue>) {
@@ -317,7 +315,7 @@ class CryptoListViewModel @Inject constructor(
             }
         }
     }
-
+    /****************** SORT ****************/
     fun saveSortState(coinSort: CoinSort) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.saveSortState(coinSort)
