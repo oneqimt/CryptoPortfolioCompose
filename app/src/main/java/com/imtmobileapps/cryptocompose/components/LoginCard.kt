@@ -61,7 +61,7 @@ fun LoginCard(
     ) {
 
         val focusManager = LocalFocusManager.current
-        val TAG = "LoginScreen"
+        val TAG = "LoginCard"
 
         val passwordVisibility = remember { mutableStateOf(false) }
 
@@ -189,9 +189,7 @@ fun LoginCard(
                         text = stringResource(id = R.string.remember_me),
                         modifier = Modifier.padding(5.dp, 12.dp, 10.dp, 0.dp)
                     )
-                }// end Remember Me
-
-
+                }// end Remember
                 Spacer(modifier = Modifier.height(10.dp))
                 /* *****************-FORGOT PASSWORD-****************** */
                 Row(modifier = Modifier.fillMaxWidth(),
