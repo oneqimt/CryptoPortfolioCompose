@@ -6,6 +6,7 @@ import androidx.security.crypto.MasterKeys
 import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.TotalValues
+import com.imtmobileapps.cryptocompose.util.Constants.CRYPTO_SENSITIVE_DATA_FILE
 import com.imtmobileapps.cryptocompose.util.Constants.MINIMUM_CHARS
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -85,7 +86,7 @@ fun writeUsernameAndPassword(context: Context, uname: String, pass: String) {
     val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
     val mainKeyAlias = MasterKeys.getOrCreate(keyGenParameterSpec)
 
-    val fileToWrite = "crypto_sensitive_data.txt"
+    val fileToWrite = CRYPTO_SENSITIVE_DATA_FILE
 
     val storagePath = context.filesDir
     val encryptedFile = EncryptedFile.Builder(
@@ -104,11 +105,11 @@ fun writeUsernameAndPassword(context: Context, uname: String, pass: String) {
 }
 
 // DELETE
-fun deleteSensitiveFile(context: Context){
-    val fileToDelete = "crypto_sensitive_data.txt"
+fun deleteSensitiveFile(context: Context) :Boolean{
+    val fileToDelete = CRYPTO_SENSITIVE_DATA_FILE
     val storagePath = context.filesDir
     val data = File(storagePath,fileToDelete)
-    data.delete()
+    return data.delete()
 
 }
 
@@ -118,7 +119,7 @@ fun readUsernameAndPassword(context: Context): String {
     val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
     val mainKeyAlias = MasterKeys.getOrCreate(keyGenParameterSpec)
 
-    val fileToRead = "crypto_sensitive_data.txt"
+    val fileToRead = CRYPTO_SENSITIVE_DATA_FILE
     val storagePath = context.filesDir
 
     val encryptedFile = EncryptedFile.Builder(

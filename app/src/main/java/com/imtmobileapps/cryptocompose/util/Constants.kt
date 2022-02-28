@@ -17,6 +17,9 @@ object Constants {
     // LOGIN inputs
     const val MINIMUM_CHARS = 4
 
+    // FILE
+    const val CRYPTO_SENSITIVE_DATA_FILE = "crypto_sensitive_data.txt"
+
 
     
 }

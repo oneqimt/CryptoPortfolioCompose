@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -13,7 +14,9 @@ import com.imtmobileapps.cryptocompose.components.SortItem
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarContentColor
 import com.imtmobileapps.cryptocompose.util.CoinSort
+import com.imtmobileapps.cryptocompose.util.deleteSensitiveFile
 import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
+import kotlinx.coroutines.launch
 import logcat.logcat
 
 
@@ -23,6 +26,8 @@ fun PersonCoinsListAppBar(
 ) {
 
     val TAG = "PersonCoinsListAppBar"
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     DefaultListAppBar(
         onSortClicked = {
@@ -37,6 +42,15 @@ fun PersonCoinsListAppBar(
         },
         onLogoutClicked = {
             logcat(TAG) { "onLogout clicked" }
+            // delete file here, because Context object is needed
+            scope.launch {
+                try {
+                    deleteSensitiveFile(context = context)
+                } catch (e: Exception) {
+                    logcat(TAG) { "Problem DELETING FILE ${e.localizedMessage as String}" }
+                }
+
+            }
             viewModel.logout()
 
         },

@@ -4,6 +4,6 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun SplashScreen(
-    navigateToListScreen: () -> Unit
+    navigateToLoginScreen: () -> Unit
 ) {
 }

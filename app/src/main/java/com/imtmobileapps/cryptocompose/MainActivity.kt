@@ -23,6 +23,7 @@ import com.imtmobileapps.cryptocompose.view.login.LoginScreen
 import com.imtmobileapps.cryptocompose.viewmodel.CryptoListViewModel
 import com.imtmobileapps.cryptocompose.viewmodel.ManageHoldingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import logcat.logcat
 
 
 @AndroidEntryPoint
@@ -63,14 +64,18 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(
                         // Not used now, but pass the CryptoValue id argument in case we want to retrieve from DB later
-                        route = Routes.PERSON_COINS_DETAIL + "?id={id}",
+                        //?cmcId=${event.cryptoValue.coin.cmcId
+                        route = Routes.PERSON_COINS_DETAIL + "?cmcId={cmcId}",
                         arguments = listOf(
-                            navArgument(name = "id") {
-                                type = NavType.StringType
-                                defaultValue = ""
+                            navArgument(name = "cmcId") {
+                                type = NavType.IntType
+                                defaultValue = -1
                             }
                         )
                     ) {
+                        // Not used, but we may later
+                        val cmcId = it.arguments!!.getInt("cmcId")
+                        logcat(TAG){"ARGUMENT passed is : $cmcId"}
                         PersonCoinsDetailScreen(onPopBackStack = {
                             navController.popBackStack()
 
@@ -99,6 +104,10 @@ class MainActivity : ComponentActivity() {
                 }//end nav host
             }
         }
+    }
+
+    companion object{
+        private val TAG = MainActivity::class.java.simpleName
     }
 }
 
