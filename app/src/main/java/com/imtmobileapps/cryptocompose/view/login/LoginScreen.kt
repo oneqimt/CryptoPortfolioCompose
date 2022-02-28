@@ -1,16 +1,14 @@
 package com.imtmobileapps.cryptocompose.view.login
 
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.imtmobileapps.cryptocompose.R
 import com.imtmobileapps.cryptocompose.components.LoginCard
 import com.imtmobileapps.cryptocompose.event.UIEvent
+import com.imtmobileapps.cryptocompose.model.Credentials
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarBackgroundColor
 import com.imtmobileapps.cryptocompose.ui.theme.topAppBarContentColor
 import com.imtmobileapps.cryptocompose.util.deleteSensitiveFile
@@ -40,7 +38,6 @@ fun LoginScreen(
 
     val checked = rememberSaveable {
         mutableStateOf(false)
-
     }
 
     val scaffoldState =
@@ -49,9 +46,13 @@ fun LoginScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-   /* val doesFileExist = rememberSaveable {
+    val doesFileExist = rememberSaveable {
         mutableStateOf(false)
-    }*/
+    }
+
+    val credentials = remember {
+        mutableStateOf(Credentials(username = "", password = ""))
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
@@ -72,11 +73,38 @@ fun LoginScreen(
             }
         }
     }
+    // Check if the user has the credentials cached, if so, log them in
+    LaunchedEffect(key1 = credentials.value) {
+        try {
+            // READ
+            val auth = readUsernameAndPassword(context = context)
+            logcat(TAG) { "LaunchedEffect AUTH from SANDBOX is : ${auth}" }
+            val test = auth.split(":")
+            credentials.value.username = test[0]
+            credentials.value.password = test[1]
+            logcat(TAG) { "LaunchedEffect SPLIT is  : ${test[0]} ${test[1]}" }
+
+            logcat(TAG) { "LaunchedEffect Credentials object is  : ${credentials.value}" }
+            doesFileExist.value = true
+
+            // go ahead and log them in
+            logcat(TAG) {
+                "calling viewModel.LOGIN from  LaunchedEffect : ${credentials.value.username} ${credentials.value.password}"
+            }
+            viewModel.login(credentials.value.username, credentials.value.password)
+
+        } catch (e: FileNotFoundException) {
+            logcat(TAG) { "FileNotFoundException ${e.localizedMessage as String}" }
+            doesFileExist.value = false
+        } catch (e: Exception) {
+            logcat(TAG) { "READ PROBLEM ${e.localizedMessage as String}" }
+            doesFileExist.value = false
+        }
+    }
 
     Scaffold(scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
-
                 title = {
                     Text(
                         text = stringResource(id = R.string.login),
@@ -84,10 +112,8 @@ fun LoginScreen(
                     )
                 },
                 backgroundColor = MaterialTheme.colors.topAppBarBackgroundColor
-
             )
         },
-
         content = {
             LoginCard(usernameText = usernameText.value,
                 passwordText = passwordText.value,
@@ -104,29 +130,22 @@ fun LoginScreen(
                     logcat(TAG) { "onDoneClicked! and password is : ${passwordText.value}" }
                 },
                 onSignInClicked = {
-                    logcat(TAG) { "onSignInClicked! and username is : ${usernameText.value}" }
-                    logcat(TAG) { "onSignInClicked! and password is : ${passwordText.value}" }
-                    viewModel.login(usernameText.value, passwordText.value)
-
+                    // if file exists, get the uname and password from it, then login
+                    logcat(TAG) { "OnSignInClicked and CREDENTIALS are : ${credentials.value}" }
+                    if (credentials.value.username.isNotEmpty() && credentials.value.password.isNotEmpty()) {
+                        logcat(TAG) {
+                            "calling viewModel.LOGIN with FILE values : ${credentials.value.username} ${credentials.value.password}"
+                        }
+                        viewModel.login(credentials.value.username, credentials.value.password)
+                    } else {
+                        // else get the login values from the text fields
+                        logcat(TAG) { "calling viewModel.LOGIN with INPUT TEXT FIELD values ${usernameText.value} ${passwordText.value}" }
+                        viewModel.login(usernameText.value, passwordText.value)
+                    }
                 },
                 onForgotPasswordClicked = {
                     logcat(TAG) { "onForgotPasswordClicked!" }
-                    // READ
-                    scope.launch {
-                        // SEE if the file is there FIRST, before trying to read
-                        try {
-                            val auth = readUsernameAndPassword(context = context)
-                            logcat(TAG) { "AUTH from SANDBOX is : ${auth}" }
-                            val test1 = auth.split(":")
-                            logcat(TAG) { "SPLIT is  : ${test1[0]} ${test1[1]}" }
-                           // doesFileExist.value = true
-                        } catch (e: FileNotFoundException) {
-                            logcat(TAG) { "FileNotFoundException ${e.localizedMessage as String}" }
-                           // doesFileExist.value = false
-                        } catch (e: Exception) {
-                            logcat(TAG) { "READ PROBLEM ${e.localizedMessage as String}" }
-                        }
-                    }
+
                 },
                 onCreateAccountClicked = {
                     logcat(TAG) { "onCreateAccountClicked!" }
@@ -134,7 +153,6 @@ fun LoginScreen(
                 },
 
                 onRememberMeChecked = {
-                    // TODO make sure usernameText and passwordText are not empty
                     checked.value = it
                     logcat(TAG) { "CHECKED VALUE IS:  ${checked.value}" }
                     scope.launch {
@@ -142,7 +160,7 @@ fun LoginScreen(
                             // delete the file
                             try {
                                 deleteSensitiveFile(context = context)
-                                //doesFileExist.value = false
+                                doesFileExist.value = false
                             } catch (e: Exception) {
                                 logcat(TAG) { "Problem resetting ${e.localizedMessage as String}" }
                             }
@@ -153,7 +171,7 @@ fun LoginScreen(
                                 writeUsernameAndPassword(context = context,
                                     usernameText.value,
                                     passwordText.value)
-                                //doesFileExist.value = true
+                                doesFileExist.value = true
                                 logcat(TAG) { "Write File Success" }
                             } catch (e: Exception) {
                                 // notify user that the file already exists
@@ -163,6 +181,8 @@ fun LoginScreen(
                     }
                 },
                 checked = checked.value
-            )
-        })
+            )// end card
+
+        }
+    )// end Scaffold
 }

@@ -34,5 +34,6 @@
     <string name="remember_me">Remember Me</string>
     <string name="enter_valid_values">Please enter valid values to save.</string>
     <string name="fields_are_not_valid">Fields are not valid.</string>
+    <string name="no_login">No Login</string>
 
 </resources>
