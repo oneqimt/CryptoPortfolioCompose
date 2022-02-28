@@ -15,7 +15,7 @@ object Constants {
     const val CACHE_DURATION_KEY = "cache_duration"
 
     // LOGIN inputs
-    const val MINIMUM_CHARS = 4
+    const val MINIMUM_CHARS = 3
 
     // FILE
     const val CRYPTO_SENSITIVE_DATA_FILE = "crypto_sensitive_data.txt"
