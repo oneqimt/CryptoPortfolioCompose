@@ -32,5 +32,7 @@
     <string name="logout">Logout</string>
     <string name="check_fields">Please check your fields before submitting</string>
     <string name="remember_me">Remember Me</string>
+    <string name="enter_valid_values">Please enter valid values to save.</string>
+    <string name="fields_are_not_valid">Fields are not valid.</string>
 
 </resources>

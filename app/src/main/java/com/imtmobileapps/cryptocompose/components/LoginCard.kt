@@ -47,7 +47,7 @@ fun LoginCard(
     onForgotPasswordClicked: () -> Unit,
     onCreateAccountClicked: () -> Unit,
     onRememberMeChecked: (Boolean) -> Unit,
-    checked:Boolean
+    checked: Boolean,
 ) {
     Card(
         modifier = Modifier
@@ -69,7 +69,10 @@ fun LoginCard(
         val isPasswordError = rememberSaveable { mutableStateOf(false) }
         val scaffoldState = rememberScaffoldState()
         val scope = rememberCoroutineScope()
+        // string resources
         val errorMessage = stringResource(id = R.string.check_fields)
+        val enterValidValues = stringResource(id = R.string.enter_valid_values)
+        val fieldsNotValid = stringResource(id = R.string.fields_are_not_valid)
 
         Scaffold(scaffoldState = scaffoldState) {
             Column(
@@ -156,7 +159,7 @@ fun LoginCard(
                         isError = isPasswordError.value
 
                     )
-                }// end 2nd row
+                }// end Password
 
                 Spacer(modifier = Modifier.height(10.dp))
                 /* *****************-REMEMBER ME-****************** */
@@ -166,14 +169,24 @@ fun LoginCard(
                     // checkbox
                     Checkbox(
                         checked = checked,
-                        onCheckedChange ={
-                            onRememberMeChecked(it)
+                        onCheckedChange = {
+                            if (validateUsername(usernameText) && validatePassword(passwordText)) {
+                                onRememberMeChecked(it)
+                            } else {
+                                focusManager.clearFocus()
+                                // show snackbar
+                                scope.launch {
+                                    scaffoldState.snackbarHostState.showSnackbar(
+                                        message = enterValidValues,
+                                        actionLabel = fieldsNotValid
+                                    )
+                                }
+                            }
                         }
-
                     )
 
                     Text(
-                        text = stringResource(id = R.string.remember_me), 
+                        text = stringResource(id = R.string.remember_me),
                         modifier = Modifier.padding(5.dp, 12.dp, 10.dp, 0.dp)
                     )
                 }// end Remember Me
@@ -243,6 +256,7 @@ fun LoginCard(
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
+                            focusManager.clearFocus()
                             onCreateAccountClicked()
                         })
                     {

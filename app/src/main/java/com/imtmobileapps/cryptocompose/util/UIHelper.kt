@@ -6,6 +6,7 @@ import androidx.security.crypto.MasterKeys
 import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.model.TotalValues
+import com.imtmobileapps.cryptocompose.util.Constants.MINIMUM_CHARS
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.math.BigDecimal
@@ -102,6 +103,7 @@ fun writeUsernameAndPassword(context: Context, uname: String, pass: String) {
     }
 }
 
+// DELETE
 fun deleteSensitiveFile(context: Context){
     val fileToDelete = "crypto_sensitive_data.txt"
     val storagePath = context.filesDir
@@ -142,14 +144,12 @@ fun readUsernameAndPassword(context: Context): String {
 
 }
 
-
 fun validateUsername(uname: String): Boolean {
-
-    return uname.isNotEmpty()
+    return uname.isNotEmpty() && uname.length >= MINIMUM_CHARS
 }
 
 fun validatePassword(pass: String): Boolean {
-    return pass.isNotEmpty()
+    return pass.isNotEmpty() && pass.length >= MINIMUM_CHARS
 }
 
 

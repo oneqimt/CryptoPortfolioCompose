@@ -134,6 +134,7 @@ fun LoginScreen(
                 },
 
                 onRememberMeChecked = {
+                    // TODO make sure usernameText and passwordText are not empty
                     checked.value = it
                     logcat(TAG) { "CHECKED VALUE IS:  ${checked.value}" }
                     scope.launch {

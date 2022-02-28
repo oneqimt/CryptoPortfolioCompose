@@ -33,7 +33,6 @@ fun PersonCoinsListAppBar(
             println("PersonCoinsListAppBar and sort state on viewmodel is : ${viewModel.sortState.value}")
         },
         onDeleteAllConfirmed = {
-            //viewModel.action.value = Action.DELETE_ALL
             logcat(TAG) { "onDeleteAllConfirmed clicked" }
         },
         onLogoutClicked = {
@@ -84,9 +83,6 @@ fun ListAppBarActions(
     onLogoutClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
 ) {
-    /*var openDialog by remember {
-        mutableStateOf(false)
-    }*/
 
     SortAction(onSortClicked = onSortClicked)
     VerticalMenuAction(

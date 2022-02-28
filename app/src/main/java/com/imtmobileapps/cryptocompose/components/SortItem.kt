@@ -9,16 +9,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.imtmobileapps.cryptocompose.model.CryptoValue
 import com.imtmobileapps.cryptocompose.ui.theme.Typography
 import com.imtmobileapps.cryptocompose.util.CoinSort
 
 @Composable
-fun SortItem(coinSort: CoinSort){
+fun SortItem(coinSort: CoinSort) {
 
     Row(
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         Text(
             modifier = Modifier.padding(LARGE_PADDING),
             text = coinSort.name,
@@ -32,6 +31,6 @@ fun SortItem(coinSort: CoinSort){
 
 @Composable
 @Preview
-fun SortItemPreview(){
+fun SortItemPreview() {
     SortItem(coinSort = CoinSort.NAME)
 }
