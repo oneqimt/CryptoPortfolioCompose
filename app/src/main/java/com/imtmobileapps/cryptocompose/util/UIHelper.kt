@@ -153,7 +153,6 @@ fun validatePassword(pass: String): Boolean {
     return pass.isNotEmpty() && pass.length >= MINIMUM_CHARS
 }
 
-
 fun validateAddHoldingValues(quantity: String, cost: String): Boolean {
     val quantityClean = removeWhiteSpace(quantity)
     val costClean = removeWhiteSpace(cost)

@@ -1,5 +1,6 @@
 package com.imtmobileapps.cryptocompose.util
 
+import androidx.compose.ui.platform.LocalContext
 import com.google.common.truth.Truth.assertThat
 import com.imtmobileapps.cryptocompose.model.Coin
 import com.imtmobileapps.cryptocompose.model.CryptoValue
@@ -8,7 +9,6 @@ import junit.framework.TestCase
 class UIHelperKtTest : TestCase() {
 
     private val cryptoValuesList: MutableList<CryptoValue> = mutableListOf()
-
 
     public override fun setUp() {
         super.setUp()
