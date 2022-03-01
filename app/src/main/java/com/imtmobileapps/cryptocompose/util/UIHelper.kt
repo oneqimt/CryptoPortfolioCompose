@@ -3,11 +3,11 @@ package com.imtmobileapps.cryptocompose.util
 import android.content.Context
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKeys
-import com.imtmobileapps.cryptocompose.model.Coin
-import com.imtmobileapps.cryptocompose.model.CryptoValue
-import com.imtmobileapps.cryptocompose.model.TotalValues
+import com.imtmobileapps.cryptocompose.model.*
 import com.imtmobileapps.cryptocompose.util.Constants.CRYPTO_SENSITIVE_DATA_FILE
+import com.imtmobileapps.cryptocompose.util.Constants.ENABLED
 import com.imtmobileapps.cryptocompose.util.Constants.MINIMUM_CHARS
+import com.imtmobileapps.cryptocompose.util.Constants.ROLE_USER
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.math.BigDecimal
@@ -158,6 +158,38 @@ fun validateAddHoldingValues(quantity: String, cost: String): Boolean {
     val costClean = removeWhiteSpace(cost)
     return quantityClean.isNotEmpty() && costClean.isNotEmpty()
 }
+
+fun createEmptySignUp(): SignUp {
+    // DEFAULT state set id to  = 3
+    val state = State(3, "", "", "")
+    val person = Person(
+        personId = 0,
+        firstName = "",
+        lastName = "",
+        email = "",
+        phone = "",
+        address = "",
+        city = "",
+        zip = "",
+        state = state
+
+    )
+
+    val auth = Auth(
+        auth_id = 0,
+        username = "",
+        password = "",
+        person_id = 0,
+        role = ROLE_USER,
+        enabled = ENABLED
+    )
+
+    return SignUp(
+        person = person,
+        auth = auth
+    )
+}
+
 
 fun getDummyCryptoValue(): CryptoValue {
 

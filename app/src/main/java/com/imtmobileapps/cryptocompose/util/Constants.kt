@@ -1,7 +1,5 @@
 package com.imtmobileapps.cryptocompose.util
 
-import androidx.datastore.preferences.core.stringPreferencesKey
-
 object Constants {
 
     const val BASE_URL = "https://www.imtmobileapps.com/"
@@ -19,6 +17,11 @@ object Constants {
 
     // FILE
     const val CRYPTO_SENSITIVE_DATA_FILE = "crypto_sensitive_data.txt"
+
+    // REGISTER
+    const val ROLE_USER = "ROLE_USER"
+    const val ENABLED = 1
+
 
 
     
