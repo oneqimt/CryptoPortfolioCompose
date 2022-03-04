@@ -1,5 +1,6 @@
 package com.imtmobileapps.cryptocompose.data
 
+import android.app.DownloadManager
 import com.imtmobileapps.cryptocompose.model.*
 import com.imtmobileapps.cryptocompose.util.CoinSort
 import com.imtmobileapps.cryptocompose.util.DataSource
@@ -11,12 +12,13 @@ interface CryptoRepository {
     suspend fun login(uname: String, pass: String): Flow<SignUp>
     suspend fun logout() : Boolean
 
+    suspend fun signUp(signUp: SignUp): Flow<RequestState<SignUp>>
+
     suspend fun savePerson(person: Person): Long
     suspend fun getPerson(personId: Int):Person
     suspend fun deletePerson()
 
     fun resetPassword(email: String): Flow<ReturnDTO>
-    fun signUp(signUp: SignUp): Flow<SignUp>
 
     fun addHolding(coinHolding: CoinHolding): Flow<Holdings>
     fun deleteHolding(holdings: Holdings): Flow<Holdings>
