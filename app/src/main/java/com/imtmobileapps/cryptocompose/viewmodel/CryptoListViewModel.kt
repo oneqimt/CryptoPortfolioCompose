@@ -168,7 +168,6 @@ class CryptoListViewModel @Inject constructor(
             try {
                 repository.getPersonCoins(personId, DataSource.REMOTE).collect {
                     _personCoins.value = RequestState.Success(it).data
-                    sendUiEvent(ListEvent.OnAppInit(personId))
                 }
 
                 val personCoinsList =
