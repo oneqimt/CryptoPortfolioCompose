@@ -79,9 +79,7 @@ fun LoginScreen(
             credentials.value.username = test[0]
             credentials.value.password = test[1]
             logcat(TAG) { "LaunchedEffect SPLIT is  : ${test[0]} ${test[1]}" }
-
             logcat(TAG) { "LaunchedEffect Credentials object is  : ${credentials.value}" }
-
             // go ahead and log them in
             logcat(TAG) {
                 "calling viewModel.LOGIN from  LaunchedEffect : ${credentials.value.username} ${credentials.value.password}"

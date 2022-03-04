@@ -227,9 +227,9 @@ class CryptoListViewModel @Inject constructor(
                 repository.getPersonCoins(personId, DataSource.LOCAL).collect {
                     _personCoins.value = RequestState.Success(it).data
 
-                    val personcoinslist =
+                    val personCoinsList =
                         (personCoins.value as RequestState.Success<List<CryptoValue>>).data
-                    val sortedlist = sortCryptoValueList(personcoinslist, CoinSort.NAME)
+                    val sortedlist = sortCryptoValueList(personCoinsList, CoinSort.NAME)
                     _personCoins.value = RequestState.Success(sortedlist)
 
                     println("$TAG COINS from DATABASE are: ${personCoins.value}")
