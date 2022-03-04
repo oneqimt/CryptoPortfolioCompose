@@ -18,6 +18,12 @@ class CryptoRepositoryImpl @Inject constructor(
     private val localDataSource: LocalDataSource,
 ) : CryptoRepository {
 
+    override suspend fun signUp(signUp: SignUp): Flow<RequestState<SignUp>> {
+        return flow {
+            val signUpObj = remoteDataSource.signUp(signUp = signUp)
+            emit(RequestState.Success(signUpObj))
+        }
+    }
     override suspend fun login(uname: String, pass: String): Flow<SignUp> {
         return flow {
             val signUp = remoteDataSource.login(uname, pass)
@@ -45,9 +51,7 @@ class CryptoRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun signUp(signUp: SignUp): Flow<SignUp> {
-        TODO("Not yet implemented")
-    }
+
 
     override fun addHolding(coinHolding: CoinHolding): Flow<Holdings> {
         TODO("Not yet implemented")

@@ -30,5 +30,9 @@ class RemoteDataSource @Inject constructor(
         return cryptoApi.logout()
     }
 
+    suspend fun signUp(signUp: SignUp): SignUp{
+        return cryptoApi.signUp(signUp)
+    }
+
 
 }
