@@ -40,7 +40,7 @@ interface CryptoApi {
     suspend fun logout() : Boolean
 
     @POST("signup")
-    fun signUp(@Body signUp: SignUp): SignUp
+    suspend fun signUp(@Body signUp: SignUp): SignUp
 
     //Stubbed only, we need a new provider
    /* @GET("coinnews")
