@@ -46,10 +46,6 @@ fun LoginScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val doesFileExist = rememberSaveable {
-        mutableStateOf(false)
-    }
-
     val credentials = remember {
         mutableStateOf(Credentials(username = "", password = ""))
     }
@@ -85,7 +81,6 @@ fun LoginScreen(
             logcat(TAG) { "LaunchedEffect SPLIT is  : ${test[0]} ${test[1]}" }
 
             logcat(TAG) { "LaunchedEffect Credentials object is  : ${credentials.value}" }
-            doesFileExist.value = true
 
             // go ahead and log them in
             logcat(TAG) {
@@ -95,10 +90,8 @@ fun LoginScreen(
 
         } catch (e: FileNotFoundException) {
             logcat(TAG) { "FileNotFoundException ${e.localizedMessage as String}" }
-            doesFileExist.value = false
         } catch (e: Exception) {
             logcat(TAG) { "READ PROBLEM ${e.localizedMessage as String}" }
-            doesFileExist.value = false
         }
     }
 
@@ -160,7 +153,6 @@ fun LoginScreen(
                             // delete the file
                             try {
                                 deleteSensitiveFile(context = context)
-                                doesFileExist.value = false
                             } catch (e: Exception) {
                                 logcat(TAG) { "Problem resetting ${e.localizedMessage as String}" }
                             }
@@ -171,7 +163,6 @@ fun LoginScreen(
                                 writeUsernameAndPassword(context = context,
                                     usernameText.value,
                                     passwordText.value)
-                                doesFileExist.value = true
                                 logcat(TAG) { "Write File Success" }
                             } catch (e: Exception) {
                                 // notify user that the file already exists
