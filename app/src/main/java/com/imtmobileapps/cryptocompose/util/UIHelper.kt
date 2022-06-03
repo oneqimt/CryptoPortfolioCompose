@@ -70,12 +70,12 @@ fun sortCryptoValueList(
 // This would be a good extension for String class
 fun removeWhiteSpace(str: String): String {
 
-    if (str.isNotEmpty()) {
-        return str.filter {
+    return if (str.isNotEmpty()) {
+        str.filter {
             !it.isWhitespace()
         }
     } else {
-        return ""
+        ""
     }
 
 }

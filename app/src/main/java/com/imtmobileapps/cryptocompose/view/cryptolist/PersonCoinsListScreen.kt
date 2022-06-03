@@ -1,6 +1,5 @@
 package com.imtmobileapps.cryptocompose.view.cryptolist
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

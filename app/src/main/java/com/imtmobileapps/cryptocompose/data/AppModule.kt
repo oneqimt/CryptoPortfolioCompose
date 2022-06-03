@@ -1,7 +1,6 @@
 package com.imtmobileapps.cryptocompose.data
 
 import android.content.Context
-import androidx.core.graphics.createBitmap
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.imtmobileapps.cryptocompose.data.local.*
@@ -59,7 +58,11 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideLocalDataSource(dataStoreHelperImpl: DataStoreHelperImpl, cryptoValuesDao:CryptoValuesDao, personDao: PersonDao, totalValuesDao:TotalValuesDao) : LocalDataSource{
+    fun provideLocalDataSource(
+        dataStoreHelperImpl: DataStoreHelperImpl,
+        cryptoValuesDao:CryptoValuesDao,
+        personDao: PersonDao,
+        totalValuesDao:TotalValuesDao) : LocalDataSource{
         return LocalDataSource(dataStoreHelperImpl, cryptoValuesDao, personDao, totalValuesDao)
     }
 

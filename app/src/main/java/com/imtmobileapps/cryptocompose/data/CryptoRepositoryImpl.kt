@@ -8,8 +8,10 @@ import com.imtmobileapps.cryptocompose.util.Constants.CMC_LOGO_URL
 import com.imtmobileapps.cryptocompose.util.DataSource
 import com.imtmobileapps.cryptocompose.util.RequestState
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 @ViewModelScoped
@@ -18,13 +20,13 @@ class CryptoRepositoryImpl @Inject constructor(
     private val localDataSource: LocalDataSource,
 ) : CryptoRepository {
 
-    override suspend fun signUp(signUp: SignUp): Flow<RequestState<SignUp>> {
+    override fun signUp(signUp: SignUp): Flow<RequestState<SignUp>> {
         return flow {
             val signUpObj = remoteDataSource.signUp(signUp = signUp)
             emit(RequestState.Success(signUpObj))
         }
     }
-    override suspend fun login(uname: String, pass: String): Flow<SignUp> {
+    override fun login(uname: String, pass: String): Flow<SignUp> {
         return flow {
             val signUp = remoteDataSource.login(uname, pass)
             emit(signUp)
@@ -47,23 +49,6 @@ class CryptoRepositoryImpl @Inject constructor(
         localDataSource.deletePerson()
     }
 
-    override fun resetPassword(email: String): Flow<ReturnDTO> {
-        TODO("Not yet implemented")
-    }
-
-
-
-    override fun addHolding(coinHolding: CoinHolding): Flow<Holdings> {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteHolding(holdings: Holdings): Flow<Holdings> {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateHolding(coinHolding: CoinHolding): Flow<Holdings> {
-        TODO("Not yet implemented")
-    }
 
     override fun getPersonCoins(
         personId: Int,
@@ -88,7 +73,7 @@ class CryptoRepositoryImpl @Inject constructor(
                     emit(RequestState.Success(personCoinsFromDatabase))
                 }
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     override fun getTotalValues(personId: Int): Flow<RequestState<TotalValues>> {
@@ -182,5 +167,22 @@ class CryptoRepositoryImpl @Inject constructor(
             emit(cryptoValue)
         }
     }
+
+    override fun resetPassword(email: String): Flow<ReturnDTO> {
+        TODO("Not yet implemented")
+    }
+
+    override fun addHolding(coinHolding: CoinHolding): Flow<Holdings> {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteHolding(holdings: Holdings): Flow<Holdings> {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateHolding(coinHolding: CoinHolding): Flow<Holdings> {
+        TODO("Not yet implemented")
+    }
+
 }
 
