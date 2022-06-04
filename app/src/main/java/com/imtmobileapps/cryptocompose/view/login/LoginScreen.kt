@@ -106,6 +106,7 @@ fun LoginScreen(
             )
         },
         content = {
+            it.calculateTopPadding()
             LoginCard(usernameText = usernameText.value,
                 passwordText = passwordText.value,
                 onUsernameChanged = {

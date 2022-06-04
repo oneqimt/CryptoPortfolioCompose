@@ -41,7 +41,7 @@ fun PersonCoinsListScreen(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = personCoins.value) {
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is UIEvent.ShowSnackbar -> {
@@ -87,7 +87,7 @@ fun PersonCoinsListScreen(
             }
         },
         content = {
-
+            it.calculateTopPadding()
             when (personCoins.value) {
                 RequestState.Loading -> {
                     Column(
